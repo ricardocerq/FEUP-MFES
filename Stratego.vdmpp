@@ -1,0 +1,150 @@
+class Stratego
+	types
+	
+		public Point:: 	
+			x: nat1
+			y: nat1;
+												
+		public Move:: 	
+			src: Point
+			dst: Point;
+										
+		public Character = 	 
+			<Flag>
+		| <Bomb> 		
+		| <Spy> 				
+		| <Scout>
+		| <Miner>
+		| <Sergeant> 
+		| <Lieutenant> 
+		| <Captain>
+		| <Major>
+		| <Colonel> 
+		| <General> 
+		| <Marshal>;
+											 
+		public Player = 
+			<Red>
+		| <Blu>
+										
+	values
+	
+		public multiplicities = {
+			<Flag> |-> 1 ,
+			<Bomb> |-> 6 ,
+			<Spy> |-> 1 ,
+			<Scout> |-> 8 ,
+			<Miner> |-> 5 ,
+			<Sergeant> |-> 4 ,
+			<Lieutenant> |-> 4 ,
+			<Captain> |-> 4 ,
+			<Major> |-> 3 ,
+			<Colonel> |-> 2 ,
+			<General> |-> 1 ,
+			<Marshal> |-> 1 
+		};
+		
+		public characterStrengths = [
+			<Flag>,
+			<Spy>,
+			<Scout>,
+			<Miner>,
+			<Sergeant>,
+			<Lieutenant>,
+			<Captain>,
+			<Major>,
+			<Colonel>,
+			<General>,
+			<Marshal>,
+			<Bomb>
+		];
+		
+		public specialMovementRanges = {
+			<Flag> |-> 0 ,
+			<Bomb> |-> 0 ,
+			<Scout> |-> -1
+		};
+		
+		public specialStrengths = {
+			<Spy> |-> <Marshal>,
+			<Miner> |-> <Bomb>
+		};
+		
+		public cannotRescue = {
+			<Scout>
+		};
+		
+		public cannotBeRescued = {
+			<Bomb>
+		};
+		
+		public maxRescuesPerPlayer = 2;
+		
+		public boardSize = 10;
+		
+		public sideProportion = 0.4;
+		
+	functions
+	
+		public validDim(v: nat1) b: bool ==
+			v > 0 and v <= boardSize
+		;
+		
+		public validPoint(p: Point) b: bool ==
+			validDim(p.x) and validDim(p.y)
+		;
+		
+		public getOpponent(pl: Player) res: Player ==
+			if pl = <Red> 
+				then <Blu> 
+				else <Red>
+			
+			post res <> pl
+		;
+		
+		public invertedPoint(p: Point) res: Point == 
+			mk_Point(p.x, boardSize - p.y + 1)
+				
+			pre validPoint(p)
+			post p.x = res.x and p.y = boardSize - res.y + 1
+		;
+		
+		public isInBackRowBlu(p: Point) res: bool ==
+			p.y = boardSize
+			
+			post res <=> (p.y = boardSize) --trivial
+		;
+		
+		public isInBackRowRed(p: Point) res: bool ==
+			p.y = 1
+			
+			post res <=> (p.y = 1) --trivial
+		;
+		
+		public isInBackRow(p: Point, pl: Player) res: bool == 
+			if pl = <Red>
+				then isInBackRowRed(p)
+				else isInBackRowBlu(p)
+				
+			pre validPoint(p)
+			post pl = <Red> => ((res = true) <=> isInBackRowRed(p)) and
+					 pl = <Blu> => ((res = true) <=> isInBackRowBlu(p))
+		;
+		
+		--public isInPlayerAreaBlu(p: Point) res: bool ==
+		--	p.y > 0 and p.y < boardSize * sideProportion
+		--	
+		--	post res <=> (p.y = boardSize) --trivial
+		--;
+		
+		--public isInPlayerAreaRed(p: Point) res: bool ==
+		--	p.y = 1
+			
+		--	post res <=> (p.y = 1) --trivial
+		--;
+		
+		--public isInPlayerArea(p: Point, pl:Player) b: bool ==
+		--	true
+		--;
+ 
+end Stratego
