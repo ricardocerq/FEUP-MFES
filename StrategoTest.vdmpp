@@ -1,0 +1,50 @@
+class StrategoTest is subclass of TestCase
+
+	operations
+	
+		public runFullSuite : () ==> ()
+		runFullSuite () == 
+		let	ts: TestSuite = new TestSuite(new StrategoTest()),
+				result = new TestResult()
+		in
+		(
+		  ts.run(result);
+		  IO`print(result.toString());
+		);
+		
+		public test1() == (
+			dcl rules: StrategoRuleSet := new StrategoRuleSet();
+			dcl positions: set of Stratego`Point := Stratego`genAllPoints(rules.boardSize);
+			dcl areaGen: Stratego`Team -> set of Stratego`Point :=
+				(lambda t: Stratego`Team
+					& Stratego`genPoints(
+					rules.boardSize, 
+					(lambda p: Stratego`Point 
+						& Stratego`isInTeamArea(rules.boardSize, rules.sideProportion, p, t)
+					)
+				)
+			);
+			dcl bluArea: set of Stratego`Point := areaGen(<Blu>);
+			dcl redArea: set of Stratego`Point := areaGen(<Red>);
+			
+			dcl backRowGen: Stratego`Team -> set of Stratego`Point :=
+				(lambda t: Stratego`Team
+					& Stratego`genPoints(
+					rules.boardSize, 
+					(lambda p: Stratego`Point 
+						& Stratego`isInBackRow(rules.boardSize, p, t)
+					)
+				)
+			);
+			dcl bluBack: set of Stratego`Point := backRowGen(<Blu>);
+			dcl redBack: set of Stratego`Point := backRowGen(<Red>);
+				--genAllPoints(rule.boardSize)
+			Assert`assertTrue("Expected true", false)
+		);
+		
+		public static main() ==
+			new StrategoTest().test1()
+		;
+			
+
+end StrategoTest
