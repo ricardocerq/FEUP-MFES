@@ -26,9 +26,64 @@ class Stratego
 		public Player = 
 			<Red>
 		| <Blu>
-		
-								
+										
 	values
+	
+		public maxRescuesPerPlayer = 2;
+		
+		public boardSize = 10;
+		
+		public sideProportion = 0.4;
+		
+		public multiplicities = {
+			<Flag> |-> 1 ,
+			<Bomb> |-> 6 ,
+			<Spy> |-> 1 ,
+			<Scout> |-> 8 ,
+			<Miner> |-> 5 ,
+			<Sergeant> |-> 4 ,
+			<Lieutenant> |-> 4 ,
+			<Captain> |-> 4 ,
+			<Major> |-> 3 ,
+			<Colonel> |-> 2 ,
+			<General> |-> 1 ,
+			<Marshal> |-> 1 
+		};
+		
+		public characterStrengths = [
+			<Flag>,
+			<Spy>,
+			<Scout>,
+			<Miner>,
+			<Sergeant>,
+			<Lieutenant>,
+			<Captain>,
+			<Major>,
+			<Colonel>,
+			<General>,
+			<Marshal>,
+			<Bomb>
+		];
+		
+		public specialMovementRanges = {
+			<Flag> |-> 0 ,
+			<Bomb> |-> 0 ,
+			<Scout> |-> boardSize
+		};
+		
+		public specialStrengths = {
+			<Spy> |-> <Marshal>,
+			<Miner> |-> <Bomb>
+		};
+		
+		public cannotRescue = {
+			<Scout>
+		};
+		
+		public cannotBeRescued = {
+			<Bomb>
+		};
+		
 		
 	functions
 		
