@@ -61,8 +61,8 @@ class StrategoRuleSet
 			<Bomb>
 		};
 		
-		--inv reduce[Stratego`Character*nat1, nat0]((lambda e:Stratego`Character*nat1, acc: nat0 & acc), )
-		
+		inv Utils`reduceMap[Stratego`Character, nat, nat]((lambda acc: nat, c: Stratego`Character, n: nat & acc + n), multiplicities, 0)
+				= boardSize * boardSize * sideProportion
 	operations
 		StrategoRuleSet(
 			maxRescuesPerPlayer_arg: nat1,
