@@ -1,5 +1,8 @@
 class StrategoTest is subclass of TestCase
-
+	functions
+		private symmetricAreas(a, b: set of Stratego`Point) res: bool ==
+			Utils`mapFunctionSet[Stratego`Point,Stratego`Point](Stratego`invertedPoint)(a) = b
+		;
 	operations
 	
 		public runFullSuite : () ==> ()
@@ -11,6 +14,8 @@ class StrategoTest is subclass of TestCase
 		  ts.run(result);
 		  IO`print(result.toString());
 		);
+		
+		
 		
 		public test1() == (
 			dcl rules: StrategoRuleSet := new StrategoRuleSet();
@@ -34,10 +39,15 @@ class StrategoTest is subclass of TestCase
 					)
 				)
 			);
+			
 			dcl bluBack: set of Stratego`Point := backRowGen(<Blu>);
 			dcl redBack: set of Stratego`Point := backRowGen(<Red>);
+			
 				--genAllPoints(rule.boardSize)
-			Assert`assertTrue("Expected true", false)
+			Assert`assertTrue(Utils`sprintf("Red and blue areas should have same cardinality, but are: {} and {}", [card redArea, card bluArea]), card bluArea = card redArea);
+			Assert`assertTrue(Utils`sprintf("Red and blue areas should be symmetric, but are \n {} \n{}", [redArea, bluArea]), symmetricAreas(bluArea, redArea));
+			Assert`assertTrue(Utils`sprintf("Red and blue backs should have same cardinality, but are: {} and {}", [card redBack, card bluBack]), card bluBack = card redBack);
+			Assert`assertTrue("Red and blue backRows should be symmetric", symmetricAreas(bluBack, redBack));
 		);
 		
 		public static main() ==

@@ -92,9 +92,9 @@ class Stratego
 		;
 		
 		public isInTeamAreaBlu(p: Point) res: bool ==
-			p.y > 0 and p.y < StrategoRuleSet`boardSize * StrategoRuleSet`sideProportion
+			p.y > 0 and p.y <= StrategoRuleSet`boardSize * StrategoRuleSet`sideProportion
 			
-			post res <=> (p.y > 0 and p.y < StrategoRuleSet`boardSize * StrategoRuleSet`sideProportion) --trivial
+			post res <=> (p.y > 0 and p.y <= StrategoRuleSet`boardSize * StrategoRuleSet`sideProportion) --trivial
 		;
 		
 		public isInTeamAreaRed(p: Point) res: bool ==
