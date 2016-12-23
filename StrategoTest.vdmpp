@@ -14,13 +14,12 @@ class StrategoTest is subclass of TestCase
 		
 		public test1() == (
 			dcl rules: StrategoRuleSet := new StrategoRuleSet();
-			dcl positions: set of Stratego`Point := Stratego`genAllPoints(rules.boardSize);
+			dcl positions: set of Stratego`Point := Stratego`genAllPoints();
 			dcl areaGen: Stratego`Team -> set of Stratego`Point :=
 				(lambda t: Stratego`Team
 					& Stratego`genPoints(
-					rules.boardSize, 
 					(lambda p: Stratego`Point 
-						& Stratego`isInTeamArea(rules.boardSize, rules.sideProportion, p, t)
+						& Stratego`isInTeamArea(p, t)
 					)
 				)
 			);
@@ -30,9 +29,8 @@ class StrategoTest is subclass of TestCase
 			dcl backRowGen: Stratego`Team -> set of Stratego`Point :=
 				(lambda t: Stratego`Team
 					& Stratego`genPoints(
-					rules.boardSize, 
 					(lambda p: Stratego`Point 
-						& Stratego`isInBackRow(rules.boardSize, p, t)
+						& Stratego`isInBackRow(p, t)
 					)
 				)
 			);

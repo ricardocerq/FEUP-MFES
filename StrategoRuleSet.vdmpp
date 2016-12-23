@@ -1,12 +1,12 @@
 class StrategoRuleSet
-
+	values
+		public boardSize = 10;
+		
+		public sideProportion = 0.4;
+		
 	instance variables
 	
 		public maxRescuesPerPlayer: nat1 := 2;
-		
-		public boardSize: nat1 := 10;
-		
-		public sideProportion: real := 0.4;
 		
 		public agressorAdvantage: bool := false;
 		
@@ -60,13 +60,12 @@ class StrategoRuleSet
 		public cannotBeRescued: set of Stratego`Character := {
 			<Bomb>
 		};
-
+		
+		--inv reduce[Stratego`Character*nat1, nat0]((lambda e:Stratego`Character*nat1, acc: nat0 & acc), )
 		
 	operations
 		StrategoRuleSet(
 			maxRescuesPerPlayer_arg: nat1,
-			boardSize_arg: nat1,
-			sideProportion_arg: real,
 			agressorAdvantage_arg: bool,
 			silentDefense_arg: bool,
 			multiplicities_arg: map Stratego`Character to nat1,
@@ -79,8 +78,6 @@ class StrategoRuleSet
 		res: StrategoRuleSet == 
 			(
 				res.maxRescuesPerPlayer := maxRescuesPerPlayer_arg;
-				res.boardSize := boardSize_arg;
-				res.sideProportion := sideProportion_arg;
 				res.agressorAdvantage := agressorAdvantage_arg;
 				res.silentDefense := silentDefense_arg;
 				res.multiplicities := multiplicities_arg;
