@@ -32,33 +32,38 @@ class Stratego
 		
 	functions
 		
-		public getOpponent(pl: Team) res: Team ==
+		public getOpponent: Team -> Team
+			getOpponent(pl) ==
 			if pl = <Red> 
 				then <Blu> 
 				else <Red>
 			
-			post res <> pl
+			post RESULT <> pl
 		;
 		
-		public validDim(v: nat1) res: bool ==
+		public validDim: nat1 -> bool 
+			validDim(v) ==
 			v > 0 and v <= StrategoRuleSet`boardSize
 		;
 		
-		public validDimSet() res: set of nat1 ==
+		public validDimSet: () -> set of nat1
+			validDimSet() ==
 			{1, ..., StrategoRuleSet`boardSize}
 			
-			post forall a in set res & validDim(a)
+			post forall a in set RESULT & validDim(a)
 		;
 		
-		public validPoint(p: Point) b: bool ==
+		public validPoint: Point -> bool 
+			validPoint(p) ==
 			validDim(p.x) and validDim(p.y)
 		;
 		
-		public invertedPoint(p: Point) res: Point == 
+		public invertedPoint: Point -> Point
+			invertedPoint(p) == 
 			mk_Point(p.x, StrategoRuleSet`boardSize - p.y + 1)
 				
 			pre validPoint(p)
-			post validPoint(p) and p.x = res.x and p.y = StrategoRuleSet`boardSize - res.y + 1
+			post validPoint(p) and p.x = RESULT.x and p.y = StrategoRuleSet`boardSize - RESULT.y + 1
 		;
 		
 		public genAllPoints() res: set of Point ==
@@ -81,14 +86,15 @@ class Stratego
 			post res <=> (p.y = StrategoRuleSet`boardSize) --trivial
 		;
 		
-		public isInBackRow(p: Point, pl: Team) res: bool == 
+		public isInBackRow: Team -> Point -> bool
+			isInBackRow(pl)(p) ==
 			if pl = <Red>
 				then isInBackRowRed(p)
 				else isInBackRowBlu(p)
 				
 			pre validPoint(p)
-			post pl = <Red> => ((res = true) <=> isInBackRowRed(p)) and
-					 pl = <Blu> => ((res = true) <=> isInBackRowBlu(p))
+			post pl = <Red> => ((RESULT = true) <=> isInBackRowRed(p)) and
+					 pl = <Blu> => ((RESULT = true) <=> isInBackRowBlu(p))
 		;
 		
 		public isInTeamAreaBlu(p: Point) res: bool ==
@@ -103,14 +109,19 @@ class Stratego
 			post res <=> (p.y <= StrategoRuleSet`boardSize and p.y > StrategoRuleSet`boardSize - StrategoRuleSet`boardSize * StrategoRuleSet`sideProportion) --trivial
 		;
 		
-		public isInTeamArea(p: Point, pl:Team) res: bool ==
+		public isInTeamArea: Team -> Point -> bool
+			isInTeamArea(pl)(p) ==
 			if pl = <Red>
 				then isInTeamAreaRed(p)
 				else isInTeamAreaBlu(p)
 				
 			pre validPoint(p)
-			post pl = <Red> => ((res = true) <=> isInTeamAreaRed(p)) and
-					 pl = <Blu> => ((res = true) <=> isInTeamAreaBlu(p))
+			post pl = <Red> => ((RESULT = true) <=> isInTeamAreaRed(p)) and
+					 pl = <Blu> => ((RESULT = true) <=> isInTeamAreaBlu(p))
+		;
+		
+		public isValidMove(inst: StrategoInstance, m: Move) res: bool == 
+			true
 		;
  
 end Stratego

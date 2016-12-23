@@ -20,28 +20,12 @@ class StrategoTest is subclass of TestCase
 		public test1() == (
 			dcl rules: StrategoRuleSet := new StrategoRuleSet();
 			dcl positions: set of Stratego`Point := Stratego`genAllPoints();
-			dcl areaGen: Stratego`Team -> set of Stratego`Point :=
-				(lambda t: Stratego`Team
-					& Stratego`genPoints(
-					(lambda p: Stratego`Point 
-						& Stratego`isInTeamArea(p, t)
-					)
-				)
-			);
-			dcl bluArea: set of Stratego`Point := areaGen(<Blu>);
-			dcl redArea: set of Stratego`Point := areaGen(<Red>);
 			
-			dcl backRowGen: Stratego`Team -> set of Stratego`Point :=
-				(lambda t: Stratego`Team
-					& Stratego`genPoints(
-					(lambda p: Stratego`Point 
-						& Stratego`isInBackRow(p, t)
-					)
-				)
-			);
+			dcl bluArea: set of Stratego`Point := Stratego`genPoints(Stratego`isInTeamArea(<Blu>));
+			dcl redArea: set of Stratego`Point := Stratego`genPoints(Stratego`isInTeamArea(<Red>));
 			
-			dcl bluBack: set of Stratego`Point := backRowGen(<Blu>);
-			dcl redBack: set of Stratego`Point := backRowGen(<Red>);
+			dcl bluBack: set of Stratego`Point := Stratego`genPoints(Stratego`isInBackRow(<Blu>));
+			dcl redBack: set of Stratego`Point := Stratego`genPoints(Stratego`isInBackRow(<Red>));
 			
 				--genAllPoints(rule.boardSize)
 			Assert`assertTrue(Utils`sprintf("Red and blue areas should have same cardinality, but are: {} and {}", [card redArea, card bluArea]), card bluArea = card redArea);

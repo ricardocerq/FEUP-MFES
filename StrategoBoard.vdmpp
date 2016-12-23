@@ -1,5 +1,0 @@
-class StrategoBoard
-	instance variables
-		pieces: map Stratego`Point to Stratego`Character
-
-end StrategoBoard
