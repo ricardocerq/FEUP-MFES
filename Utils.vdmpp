@@ -1,0 +1,19 @@
+class Utils
+	functions
+	
+		public reduce[@T, @R](f: @T * @R -> @R, list: seq of @T, starter: @R) res: @R ==
+			if(len list = 0)
+				then starter
+				else reduce[@T, @R](f, tl list, f(hd list, starter))
+		;
+		
+		public map2set[@L, @R](m: map @L to @R) res: set of (@L*@R) ==
+			{ mk_(a,b) | a in set dom m, b in set rng m & b = m(a)}
+		;
+		
+		public map2seq[@L, @R](m: map @L to @R) res: seq of (@L*@R) ==
+			VDMUtil`set2seq[@L*@R](map2set[@L,@R](m))
+		;
+		--public mapmap[@L, @R, @S](m: map @L to @R, f: )
+
+end Utils
