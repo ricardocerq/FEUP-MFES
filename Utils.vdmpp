@@ -1,39 +1,67 @@
 class Utils
 	functions
-		private reduceMeasure[@T, @R](f: @R * @T -> @R, list: seq of @T, starter: @R) res: nat ==
+		private reduceSeqMeasure[@T, @R]: (@R * @T -> @R) * @R * seq of @T +> nat
+		reduceSeqMeasure(f, starter, list) == 
 			len list
 		;
 		
-		public reduce[@T, @R](f: @R * @T -> @R, list: seq of @T, starter: @R) res: @R ==
+		public reduceSeq[@T, @R]: (@R * @T -> @R) -> @R -> seq of @T -> @R
+			reduceSeq(f)(starter)(list) == 
 			if(len list = 0)
 				then starter
-				else reduce[@T, @R](f, tl list, f(starter, hd list))
+				else reduceSeq[@T, @R](f)(f(starter, hd list))(tl list)
+			measure reduceSeqMeasure
 		;
 		
-		public mapFunction[@P, @R](f: @P->@R, list: seq of @P) res: seq of @R ==
+		private mapFunctionSeqMeasure[@P, @R]: (@P->@R) * seq of @P +> nat
+			mapFunctionSeqMeasure(f,list) == 
+			len list
+		;
+		
+		public mapFunctionSeq[@P, @R]: (@P->@R) -> seq of @P -> seq of @R
+			mapFunctionSeq(f)(list) == 
 			if(len list = 0)
 				then []
-			else [f(hd list)] ^ mapFunction[@P, @R](f, tl list)
+			else [f(hd list)] ^ mapFunctionSeq[@P, @R](f)(tl list)
+			
+			measure mapFunctionSeqMeasure
 		;
 		
-		private reduceMapAux[@L, @R, @S](f: @S * @L * @R -> @S, m: map @L to @R, starter: @S, list: seq of @L) res: @S ==
+		private reduceMapAuxMeasure[@L, @R, @S]: (@S * @L * @R -> @S) * @S * map @L to @R * seq of @L +> nat
+			reduceMapAuxMeasure(f,starter,m,list) ==
+			len list
+		;
+		
+		private reduceMapAux[@L, @R, @S]: (@S * @L * @R -> @S) -> @S -> map @L to @R ->seq of @L -> @S
+			reduceMapAux(f)(starter)(m)(list) ==
 			if(len list = 0)
 				then starter
-				else reduceMapAux[@L, @R, @S](f, m, f(starter, hd list, m(hd list)), tl list)
+				else reduceMapAux[@L, @R, @S](f)(f(starter, hd list, m(hd list)))(m)(tl list)
+			measure reduceMapAuxMeasure
 		;
 		
-		public reduceMap[@L, @R, @S](f: @S * @L * @R -> @S, m: map @L to @R, starter: @S) res: @S ==
-			reduceMapAux[@L, @R, @S](f, m, starter, VDMUtil`set2seq[@L](dom m))
+		public reduceMap[@L, @R, @S]: (@S * @L * @R -> @S) -> @S -> map @L to @R -> @S
+			reduceMap(f)(starter)(m) ==
+			reduceMapAux[@L, @R, @S](f)(starter)(m)(VDMUtil`set2seq[@L](dom m))
 		;
 		
-		private mapFunctionMapAux[@L, @R, @S](f: @L*@R->@S, m: map @L to @R, list: seq of @L) res: seq of @S ==
+		private mapFunctionMapAuxMeasure[@L, @R, @S]: (@L*@R->@S) * map @L to @R * seq of @L +> nat
+			mapFunctionMapAuxMeasure(f, m, list) ==
+			len list
+		;
+		
+		private mapFunctionMapAux[@L, @R, @S]: (@L*@R->@S) -> map @L to @R -> seq of @L -> seq of @S
+			mapFunctionMapAux(f)(m)(list) ==
 			if(len list = 0)
 				then []
-			else [f(hd list, m(hd list))] ^ mapFunctionMapAux[@L, @R, @S](f, m, tl list)
+			else [f(hd list, m(hd list))] ^ mapFunctionMapAux[@L, @R, @S](f)(m)(tl list)
+			
+			measure mapFunctionMapAuxMeasure
 		;
 
-		public mapFunctionMap[@L, @R, @S](f: @L*@R->@S, m: map @L to @R) res: seq of @S ==
-			mapFunctionMapAux[@L, @R, @S](f, m, VDMUtil`set2seq[@L](dom m))
+		public mapFunctionMap[@L, @R, @S]: (@L*@R->@S) -> map @L to @R -> seq of @S
+			mapFunctionMap(f)(m) ==
+			mapFunctionMapAux[@L, @R, @S](f)(m)(VDMUtil`set2seq[@L](dom m))
 		;
 		
 		public map2set[@L, @R](m: map @L to @R) res: set of (@L*@R) ==

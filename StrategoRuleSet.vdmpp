@@ -61,7 +61,7 @@ class StrategoRuleSet
 			<Bomb>
 		};
 		
-		inv Utils`reduceMap[Stratego`Character, nat, nat]((lambda acc: nat, c: Stratego`Character, n: nat & acc + n), multiplicities, 0)
+		inv Utils`reduceMap[Stratego`Character, nat, nat]((lambda acc: nat, c: Stratego`Character, n: nat & acc + n))(0)(multiplicities)
 				= boardSize * boardSize * sideProportion
 	operations
 		StrategoRuleSet(
