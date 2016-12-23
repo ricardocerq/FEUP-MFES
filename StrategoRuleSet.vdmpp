@@ -53,6 +53,7 @@ class StrategoRuleSet
 			<Miner> |-> <Bomb>
 		};
 		
+		
 		public cannotRescue: set of Stratego`Character := {
 			<Scout>
 		};

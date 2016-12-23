@@ -66,24 +66,28 @@ class Stratego
 			post validPoint(p) and p.x = RESULT.x and p.y = StrategoRuleSet`boardSize - RESULT.y + 1
 		;
 		
-		public genAllPoints() res: set of Point ==
-			 {mk_Point(x,y) | x in set validDimSet() , y in set validDimSet()}
+		public genAllPoints: () -> set of Point
+			genAllPoints() ==
+			{ mk_Point(x,y) | x in set validDimSet() , y in set validDimSet() }
 		;
 		
-		public genPoints(f: Point->bool) res: set of Point ==
-			 {p | p in set genAllPoints() & f(p)}
+		public genPoints: (Point->bool) -> set of Point
+			genPoints(f) ==
+			{ p | p in set genAllPoints() & f(p) }
 		;
 		
-		public isInBackRowBlu(p: Point) res: bool ==
+		public isInBackRowBlu: Point -> bool
+			isInBackRowBlu(p) ==
 			p.y = 1
 			
-			post res <=> (p.y = 1) --trivial
+			post RESULT <=> (p.y = 1) -- trivial
 		;
 		
-		public isInBackRowRed(p: Point) res: bool ==
+		public isInBackRowRed: Point -> bool
+		isInBackRowRed(p) ==
 			p.y = StrategoRuleSet`boardSize
 			
-			post res <=> (p.y = StrategoRuleSet`boardSize) --trivial
+			post RESULT <=> (p.y = StrategoRuleSet`boardSize) -- trivial
 		;
 		
 		public isInBackRow: Team -> Point -> bool
@@ -97,16 +101,18 @@ class Stratego
 					 pl = <Blu> => ((RESULT = true) <=> isInBackRowBlu(p))
 		;
 		
-		public isInTeamAreaBlu(p: Point) res: bool ==
+		public isInTeamAreaBlu: Point -> bool
+			isInTeamAreaBlu(p) ==
 			p.y > 0 and p.y <= StrategoRuleSet`boardSize * StrategoRuleSet`sideProportion
 			
-			post res <=> (p.y > 0 and p.y <= StrategoRuleSet`boardSize * StrategoRuleSet`sideProportion) --trivial
+			post RESULT <=> (p.y > 0 and p.y <= StrategoRuleSet`boardSize * StrategoRuleSet`sideProportion) -- trivial
 		;
 		
-		public isInTeamAreaRed(p: Point) res: bool ==
+		public isInTeamAreaRed: Point -> bool
+			isInTeamAreaRed(p) ==
 			p.y <= StrategoRuleSet`boardSize and p.y > StrategoRuleSet`boardSize - StrategoRuleSet`boardSize * StrategoRuleSet`sideProportion
 			
-			post res <=> (p.y <= StrategoRuleSet`boardSize and p.y > StrategoRuleSet`boardSize - StrategoRuleSet`boardSize * StrategoRuleSet`sideProportion) --trivial
+			post RESULT <=> (p.y <= StrategoRuleSet`boardSize and p.y > StrategoRuleSet`boardSize - StrategoRuleSet`boardSize * StrategoRuleSet`sideProportion) --trivial
 		;
 		
 		public isInTeamArea: Team -> Point -> bool
