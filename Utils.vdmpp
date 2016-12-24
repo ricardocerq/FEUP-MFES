@@ -74,6 +74,11 @@ class Utils
 			mapFunctionMapAux[@L, @R, @S](f)(m)(VDMUtil`set2seq[@L](dom m))
 		;
 		
+		public filterSet[@T]: (@T->bool) -> set of @T -> set of @T
+			filterSet(f)(list) ==
+			{e | e in set list & f(e)} 
+		;
+		
 		public map2set[@L, @R](m: map @L to @R) res: set of (@L*@R) ==
 			{ mk_(a,b) | a in set dom m, b in set rng m & b = m(a)}
 		;
@@ -106,6 +111,19 @@ class Utils
 		public sprintf: seq of char * seq of ? -> seq of char
 			sprintf(format, list) ==
 			sprintfAux(format, list, "")
+		;
+		
+		public max: real * real -> real
+			max(a,b) ==
+			if(a >= b)
+				then a
+				else b
+			post RESULT >= a and RESULT >= b and (RESULT = a or RESULT = b)
+		;
+		
+		public dup: nat -> (nat*nat)
+			dup(d) ==
+				mk_(d,d)
 		;
 
 end Utils

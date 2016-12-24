@@ -8,4 +8,5 @@ class StrategoInstance
 		public player1: StrategoPlayer := new StrategoPlayer(<Blu>);
 		public player2: StrategoPlayer := new StrategoPlayer(<Red>);
 		public board: Board := ({|->})
+		
 end StrategoInstance
