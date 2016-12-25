@@ -113,12 +113,12 @@ class Utils
 			sprintfAux(format, list, "")
 		;
 		
-		public max: real * real -> real
-			max(a,b) ==
+		public maxAndMin: real * real -> real * real
+			maxAndMin(a,b) ==
 			if(a >= b)
-				then a
-				else b
-			post RESULT >= a and RESULT >= b and (RESULT = a or RESULT = b)
+				then mk_(a,b)
+				else mk_(b,a)
+			post RESULT.#1 >= RESULT.#2 and {RESULT.#1, RESULT.#2} = {a,b}
 		;
 		
 		public dup: nat -> (nat*nat)

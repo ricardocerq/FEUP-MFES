@@ -1,0 +1,64 @@
+class StrategoState
+	types
+		public Board  = map Stratego`Point to Stratego`Piece
+		;
+		
+		public Player::
+			team: Stratego`Team
+			plays: seq of Stratego`Move
+			captured: seq of Stratego`Character
+		;
+		
+		public Instance::
+			ruleSet: StrategoRules`RuleSet
+			currentTeam: Stratego`Team
+			players: map Stratego`Team to Player
+			board: Board
+			
+			inv mk_Instance(-,-,pl,-) == forall team in set dom pl & pl(team).team = team
+		;
+		
+	functions
+		public newPlayer: Stratego`Team -> Player
+			newPlayer(t) == 
+			mk_Player(t, [], [])
+		;
+		
+		public pieceAt: Board -> Stratego`Point -> [Stratego`Piece]
+			pieceAt(board)(p) ==
+			if p in set dom board
+				then board(p)
+				else nil
+			pre Stratego`validPoint(p)
+		;
+		
+		public addMovePlayer: Player -> Stratego`Move -> Player
+			addMovePlayer(p)(move) ==
+			mk_Player(p.team, p.plays ^ [move], p.captured)
+			
+			post RESULT.team = p.team and RESULT.plays = p.plays ^ [move]  and RESULT.captured = p.captured
+		;
+		
+		public addCapture: Player -> [Stratego`Piece] -> Player
+			addCapture(p)(piece) ==
+			if(piece = nil)
+				then p
+			else mk_Player(p.team, p.plays, p.captured ^ [piece.character])
+			
+			post RESULT.team = p.team and RESULT.plays = p.plays and (piece = nil or RESULT.captured = p.captured ^ [piece.character])
+		;
+		
+		public addMoveBoard: Board -> Stratego`Move -> (bool*bool) -> Board 
+			addMoveBoard(board)(m)(mk_(keepSrc,keepDst)) ==
+			let srcPiece = StrategoState`pieceAt(board)(m.src),
+					boardNoSrc = ({m.src} <-: board)
+					in (
+					if keepDst
+						then boardNoSrc -- only remove src
+						else if keepSrc
+										then boardNoSrc ++ {m.dst |-> srcPiece} -- replace piece at dst with src piece
+										else {m.dst} <-: boardNoSrc -- remove both
+			)
+			pre not keepSrc and keepDst and StrategoState`pieceAt(board)(m.src) <> nil
+		;
+end StrategoState
