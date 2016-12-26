@@ -1,5 +1,6 @@
 class Stratego
-
+	instance variables
+		public static graphics : gui_Graphics:= new gui_Graphics();
 	types
 	
 		public Point:: 	
@@ -239,7 +240,12 @@ class Stratego
 			pre isValidMove(inst)(m)
 		; 
 		
-		
- 		
+	operations
+		public Run: () ==> ()
+		Run() == (
+			graphics.init();
+			graphics.testFunc2(StrategoState`setBoard(StrategoState`defaultStartingInstance(), StrategoState`fillBoardRandom(StrategoState`defaultStartingInstance().ruleSet)));
+	 	)
+
 end Stratego
 

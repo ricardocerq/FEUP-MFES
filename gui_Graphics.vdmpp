@@ -1,0 +1,12 @@
+class gui_Graphics
+
+	operations
+		public init : () ==> ()
+		init() == is not yet specified;
+		
+		public testFunc : nat ==> ()
+		testFunc(number) == is not yet specified;
+		
+		public testFunc2 : StrategoState`Instance ==> ()
+		testFunc2(inst) == is not yet specified;
+end gui_Graphics
