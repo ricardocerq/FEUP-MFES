@@ -3,6 +3,19 @@ class StrategoRules
 		public boardSize = 10;
 		
 		public sideProportion = 0.4;
+		
+		public lakes = {
+			mk_Stratego`Point(3,5),
+			mk_Stratego`Point(3,6),
+			mk_Stratego`Point(4,5),
+			mk_Stratego`Point(4,6),
+			
+			mk_Stratego`Point(7,5),
+			mk_Stratego`Point(7,6),
+			mk_Stratego`Point(8,5),
+			mk_Stratego`Point(8,6)
+		};
+		
 	types
 	
 		public RuleSet::
@@ -90,7 +103,10 @@ class StrategoRules
 						1
 					)
 			;
-			
+			public getNumberOfCharacters: () -> nat
+				getNumberOfCharacters() ==
+				boardSize * sideProportion * boardSize
+			;
 			public getAllCharacters: RuleSet -> seq of Stratego`Character 
 				getAllCharacters(ruleSet) ==
 					conc Utils`mapFunctionMap[Stratego`Character, nat, seq of Stratego`Character]

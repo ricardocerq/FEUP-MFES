@@ -5,10 +5,21 @@ class interop_io
 			printRed(s) ==
 			is not yet specified
 		;
+		public static printGreen: seq of char ==> ()
+			printGreen(s) ==
+			is not yet specified
+		;
 		
 		public static getMove: () ==> Stratego`Move
 			getMove() ==
 			is not yet specified
 		;
+		
+	
+		public static readLine: () ==> seq of char
+			readLine() == 
+			is not yet specified
+		;
+		
 
 end interop_io

@@ -37,7 +37,7 @@ class StrategoTest is subclass of TestCase
 		);
 		public test2() == (
 			dcl inst: StrategoState`Instance := StrategoState`defaultStartingInstance();
-			StrategoOperations`printBoard(StrategoState`setBoard(inst, StrategoState`fillBoard(inst.ruleSet)))
+			StrategoOperations`printBoard(StrategoState`setBoard(inst, StrategoState`fillBoardRandom(inst.ruleSet)))
 		);
 		
 		public static main() ==

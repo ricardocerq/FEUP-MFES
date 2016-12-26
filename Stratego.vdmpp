@@ -181,7 +181,10 @@ class Stratego
 			post pl = <Red> => ((RESULT = true) <=> isInTeamAreaRed(p)) and
 					 pl = <Blu> => ((RESULT = true) <=> isInTeamAreaBlu(p))
 		;
-		
+		public isLake:Point -> bool
+			isLake(p) == 
+			p in set StrategoRules`lakes
+		;
 		public pointsBetween: Point -> Point ->  set of Point
 			pointsBetween(src)(dst) ==
 				let align = alignment(src)(dst)
@@ -194,7 +197,9 @@ class Stratego
 		;
 		
 		public isValidMove: StrategoState`Instance -> Move -> bool
-			isValidMove(inst)(m) == 
+			isValidMove(inst)(m) ==
+			not isLake(m.src) and
+			not isLake(m.dst) and 
 			aligned(m.src)(m.dst) and 
 			let srcPiece = StrategoState`pieceAt(inst.board)(m.src),
 					dstPiece = StrategoState`pieceAt(inst.board)(m.dst),

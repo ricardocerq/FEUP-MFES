@@ -185,7 +185,7 @@ class Utils
 				if(len list = 0) then
 					 []
 				else [list(hd orders)] ^ rearrange[@T](tl orders)(removeElement[@T](list)(hd orders))
-			pre --forall i in set inds orders & orders(i) <= len list - i + 1 and
+			pre isOrdering(orders) and
 					len orders = len list
 		;
 		
@@ -209,15 +209,26 @@ class Utils
 			createMap[@L,@R](VDMUtil`set2seq[@L](left))(right)
 		;
 		
+		public isOrdering: seq of nat -> bool
+			isOrdering(orders) == 
+			forall i in set inds orders & orders(i) <= len orders - i + 1
+		; 
+		
 	operations
-	
+		public static randomOrdering: nat ==> seq of nat
+			randomOrdering(n) == (
+				dcl orders: seq of nat := [];
+				for x = 0 to n - 1  do (
+					orders := orders ^ [MATH`rand(n - x) + 1];
+				);
+				return orders;
+			)
+			post len RESULT = n and
+					isOrdering(RESULT)
+		;
 		public static shuffle: seq of ? ==> seq of ?
 			shuffle(list) == (
-				dcl orders: seq of nat := [];
-				for x = 0 to len list - 1  do (
-					orders := orders ^ [MATH`rand(len list - x) + 1];
-				);
-				return rearrange[?](orders)(list);
+				return rearrange[?](randomOrdering(len list))(list);
 			)
 		;
 		
