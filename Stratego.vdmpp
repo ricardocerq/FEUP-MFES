@@ -9,7 +9,7 @@ class Stratego
 		public Move:: 	
 			src: Point
 			dst: Point
-			inv mk_Move(s, d) == aligned(s)(d)
+			--inv mk_Move(s, d) == aligned(s)(d)
 		;				
 		public Character = 	 
 			<Flag>

@@ -1,0 +1,14 @@
+class interop_io
+
+	operations
+		public static printRed: seq of char ==> ()
+			printRed(s) ==
+			is not yet specified
+		;
+		
+		public static getMove: () ==> Stratego`Move
+			getMove() ==
+			is not yet specified
+		;
+
+end interop_io

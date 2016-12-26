@@ -9,7 +9,7 @@ class StrategoRules
 			maxRescuesPerPlayer: nat1
 			agressorAdvantage: bool
 			silentDefense: bool
-			multiplicities: map Stratego`Character to nat1
+			multiplicities: map Stratego`Character to nat
 			characterStrengths: seq of Stratego`Character
 			specialMovementRanges: map Stratego`Character to nat
 			specialStrengths: map Stratego`Character to Stratego`Character
@@ -79,7 +79,7 @@ class StrategoRules
 		
 			public getStrength: RuleSet->Stratego`Character-> nat
 				getStrength(ruleset)(character) ==
-					iota i in set inds ruleset.characterStrengths & ruleset.characterStrengths(i) = character
+					Utils`indexOf[Stratego`Character](ruleset.characterStrengths)(character)
 			;
 			
 			public getMovementRange: RuleSet->Stratego`Character-> nat
@@ -89,6 +89,15 @@ class StrategoRules
 					) else (
 						1
 					)
+			;
+			
+			public getAllCharacters: RuleSet -> seq of Stratego`Character 
+				getAllCharacters(ruleSet) ==
+					conc Utils`mapFunctionMap[Stratego`Character, nat, seq of Stratego`Character]
+						(lambda c: Stratego`Character, m: nat & 
+							((lambda acc: seq of Stratego`Character & acc ^ [c])**m)([])
+						)
+						(ruleSet.multiplicities)
 			;
 			
 			public resolveAttack: RuleSet -> Stratego`Piece -> [Stratego`Piece] -> (bool*bool)

@@ -1,5 +1,6 @@
 class Utils
 	functions
+	
 		private reduceSeqMeasure[@T, @R]: (@R * @T -> @R) * @R * seq of @T +> nat
 		reduceSeqMeasure(-, -, list) == 
 			len list
@@ -11,6 +12,50 @@ class Utils
 				then starter
 				else reduceSeq[@T, @R](f)(f(starter, hd list))(tl list)
 			measure reduceSeqMeasure
+		;
+		
+		private reduceTwoSeqMeasure[@L, @R, @S]: (@S * @L * @R -> @S) * @S * seq of @L * seq of @R +> nat
+		reduceTwoSeqMeasure(-, -, list1, list2) == 
+			len list1
+		;
+		
+		public reduceTwoSeq[@L, @R, @S]: (@S * @L * @R -> @S) -> @S -> seq of @L -> seq of @R -> @S
+			reduceTwoSeq(f)(starter)(list1)(list2) == 
+			if(len list1 = 0)
+				then starter
+				else reduceTwoSeq[@L, @R, @S](f)(f(starter, hd list1, hd list2))(tl list1)(tl list2)
+				
+			pre len list1 = len list2
+			measure reduceTwoSeqMeasure
+			
+		;
+		
+		private reduceMultiSeqMeasure[@R]: (@R * seq of ? -> @R) * @R * seq of seq of ? +> nat
+			reduceMultiSeqMeasure(-, -, listlist) == 
+			len hd listlist
+		;
+		
+		public reduceMultiSeq[@R]: (@R * seq of ? -> @R) -> @R -> seq of seq of ? -> @R
+			reduceMultiSeq(f)(starter)(listlist) == 
+			if(len hd listlist = 0)
+				then starter
+				else 
+					reduceMultiSeq[@R]
+						(f)
+						(	
+							f(starter, 
+								mapFunctionSeq[seq of ?, ?]
+									(lambda list: seq of ? & hd list)
+									(listlist)
+							)
+						)
+						(
+							mapFunctionSeq[seq of ?, ?]
+									(lambda list: seq of ? & tl list)
+									(listlist)
+						)
+			pre forall list, list2 in seq listlist & len list = len list2
+			measure reduceMultiSeqMeasure
 		;
 		
 		public reduceSet[@T, @R]: (@R * @T -> @R) -> @R -> set of @T -> @R
@@ -124,6 +169,62 @@ class Utils
 		public dup: nat -> (nat*nat)
 			dup(d) ==
 				mk_(d,d)
+		;
+		
+		public removeElement[@T]: seq of @T -> nat1 -> seq of @T
+			removeElement(list)(i) ==
+				if(i = 1) then
+					tl list
+					else [hd list] ^ removeElement[@T](tl list)(i-1)
+			pre i >= 1 and i <= len list
+			post len list - 1 = len RESULT
+		;
+		
+		public rearrange[@T]: seq of nat1 -> seq of @T -> seq of @T
+			rearrange(orders)(list) ==
+				if(len list = 0) then
+					 []
+				else [list(hd orders)] ^ rearrange[@T](tl orders)(removeElement[@T](list)(hd orders))
+			pre --forall i in set inds orders & orders(i) <= len list - i + 1 and
+					len orders = len list
+		;
+		
+		public indexOf[@T]: seq of @T ->  @T -> nat1
+			indexOf(list)(e) ==
+			iota n in set inds list & list(n) = e and forall ix in set inds list & list(ix) = e => n <= ix
+			
+			pre e in set elems list
+			post list(RESULT) = e
+		;
+		
+		public createMap[@L, @R]: seq of @L -> seq of @R -> map @L to @R
+			createMap(left)(right) == 
+			reduceTwoSeq[@L, @R, map @L to @R](lambda m: map @L to @R, l: @L, r: @R & m ++ {l |-> r})({|->})(left)(right)
+			post len left = len right and
+					 forall i in set inds left & RESULT(left(i)) = right(i)
+		;
+		
+		public createMap[@L, @R]: set of @L -> seq of @R -> map @L to @R
+			createMap(left)(right) == 
+			createMap[@L,@R](VDMUtil`set2seq[@L](left))(right)
+		;
+		
+	operations
+	
+		public static shuffle: seq of ? ==> seq of ?
+			shuffle(list) == (
+				dcl orders: seq of nat := [];
+				for x = 0 to len list - 1  do (
+					orders := orders ^ [MATH`rand(len list - x) + 1];
+				);
+				return rearrange[?](orders)(list);
+			)
+		;
+		
+		public static printf: seq of char * seq of ? ==> ()
+			printf(format, list) == (
+				IO`print(sprintf(format, list))
+			)
 		;
 
 end Utils

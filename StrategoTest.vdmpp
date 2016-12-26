@@ -31,8 +31,13 @@ class StrategoTest is subclass of TestCase
 			Assert`assertTrue(Utils`sprintf("Red and blue areas should have same cardinality, but are: {} and {}", [card redArea, card bluArea]), card bluArea = card redArea);
 			Assert`assertTrue(Utils`sprintf("Red and blue areas should have cardinality of 40, but are: {} and {}", [card redArea, card bluArea]), card bluArea = 40 and  card redArea = 40);
 			Assert`assertTrue(Utils`sprintf("Red and blue areas should be symmetric, but are \n {} \n{}", [redArea, bluArea]), symmetricAreas(bluArea, redArea));
+			Assert`assertTrue(Utils`sprintf("Red and blue backs should have cardinality of 10, but are: {} and {}", [card redBack, card bluBack]), card bluBack = 10 and  card redBack = 10);
 			Assert`assertTrue(Utils`sprintf("Red and blue backs should have same cardinality, but are: {} and {}", [card redBack, card bluBack]), card bluBack = card redBack);
 			Assert`assertTrue(Utils`sprintf("Red and blue backs should be symmetric, but are \n {} \n{}", [redBack, bluBack]), symmetricAreas(bluBack, redBack));
+		);
+		public test2() == (
+			dcl inst: StrategoState`Instance := StrategoState`defaultStartingInstance();
+			StrategoOperations`printBoard(StrategoState`setBoard(inst, StrategoState`fillBoard(inst.ruleSet)))
 		);
 		
 		public static main() ==

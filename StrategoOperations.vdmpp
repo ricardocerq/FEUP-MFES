@@ -1,0 +1,49 @@
+class StrategoOperations
+	operations
+	
+		public static printBoard: StrategoState`Instance ==> ()
+			printBoard(inst) ==(
+				dcl str: seq of char := "\n";
+				let f = getChar(inst.ruleSet) in (
+					for y = 1 to 10 do (
+						for x = 1 to 10 do (
+								str := str ^ f(StrategoState`pieceAt(inst.board)(mk_Stratego`Point(x,y))) ^ " ";
+								--printPiece(f, StrategoState`pieceAt(inst.board)(mk_Stratego`Point(x,y)));
+								--IO`print(" ");
+						);
+						str := str ^ "\n";
+						--IO`print("\n");
+					)
+				);
+				IO`println(str);
+			)
+		;
+		
+		public static printPiece: (Stratego`Piece -> seq of char) * [Stratego`Piece] ==> ()
+			printPiece(f, piece) == (
+				if (piece = nil) then 
+					IO`println(" ")
+				else if (piece.team = <Blu>) then 
+						IO`print(f(piece))
+					else interop_io`printRed(f(piece))
+			)
+		;
+		
+	functions
+	
+		public getChar: StrategoRules`RuleSet -> [Stratego`Piece] -> seq of char
+			getChar(ruleset)(piece) ==
+			if piece = nil then
+				"-" 
+			else if piece.character = <Flag>
+				then "F"
+				else if piece.character = <Bomb>
+								then "B"
+								else let str = VDMUtil`val2seq_of_char[nat](StrategoRules`getStrength(ruleset)(piece.character)-1) in (
+									[str(len str)]
+								)
+		;
+		
+		
+
+end StrategoOperations
