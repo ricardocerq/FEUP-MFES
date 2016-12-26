@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/ast.jar"/>
+	<classpathentry kind="lib" path="lib/interpreter.jar"/>
+	<classpathentry kind="lib" path="lib/parser.jar"/>
+	<classpathentry kind="lib" path="lib/typechecker.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
