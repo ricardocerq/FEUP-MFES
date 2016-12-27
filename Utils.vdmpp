@@ -5,7 +5,6 @@ class Utils
 			reduceSeqMeasure(-, -, list) == 
 				len list
 				
-			post RESULT = len list
 		;
 		
 		public reduceSeq[@T, @R]: (@R * @T -> @R) -> @R -> seq of @T -> @R
@@ -23,7 +22,6 @@ class Utils
 			reduceTwoSeqMeasure(-, -, list1, -) == 
 				len list1
 			
-			post RESULT = len list1
 		;
 		
 		public reduceTwoSeq[@L, @R, @S]: (@S * @L * @R -> @S) -> @S -> seq of @L -> seq of @R -> @S
@@ -83,8 +81,6 @@ class Utils
 		private mapFunctionSeqMeasure[@P, @R]: (@P->@R) * seq of @P +> nat
 			mapFunctionSeqMeasure(-,list) == 
 				len list
-				
-			post RESULT = len list
 		;
 		
 		public mapFunctionSeq[@P, @R]: (@P->@R) -> seq of @P -> seq of @R
@@ -109,7 +105,6 @@ class Utils
 			reduceMapAuxMeasure(-, -, -,list) ==
 				len list
 				
-			post RESULT = len list
 		;
 		
 		private reduceMapAux[@L, @R, @S]: (@S * @L * @R -> @S) -> @S -> map @L to @R ->seq of @L -> @S
@@ -131,8 +126,6 @@ class Utils
 		private mapFunctionMapAuxMeasure[@L, @R, @S]: (@L*@R->@S) * map @L to @R * seq of @L +> nat
 			mapFunctionMapAuxMeasure(-, -, list) ==
 				len list
-				
-			post RESULT = len list
 		;
 		
 		private mapFunctionMapAux[@L, @R, @S]: (@L*@R->@S) -> map @L to @R -> seq of @L -> seq of @S
@@ -165,8 +158,6 @@ class Utils
 		private sprintfAuxMeasure: seq of char * seq of ? * seq of char -> nat
 			sprintfAuxMeasure(format, -, -) ==
 				len format
-				
-			post RESULT = len format
 		;
 		
 		public sprintfAux: seq of char * seq of ? * seq of char -> seq of char
@@ -224,8 +215,6 @@ class Utils
 		public removeIndexMeasure[@T]: seq of @T * nat1 +> nat
 			removeIndexMeasure(list,-) ==
 				len list
-				
-			post RESULT = len list
 		;
 		
 		public removeIndex[@T]: seq of @T -> nat1 -> seq of @T
@@ -244,8 +233,6 @@ class Utils
 		public rearrangeMeasure[@T]: Ordering * seq of @T +> nat
 			rearrangeMeasure(orders, -) ==
 				len orders
-				
-			post RESULT = len orders
 		;
 		
 		public rearrange[@T]: Ordering -> seq of @T -> seq of @T
