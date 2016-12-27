@@ -4,6 +4,7 @@ import org.overture.interpreter.debug.RemoteInterpreter;
 import org.overture.interpreter.values.Value;
 
 public class StrategoControl {
+	
 	private RemoteInterpreter interpreter;
 
 	public StrategoControl(RemoteInterpreter intrprtr) {
@@ -17,7 +18,7 @@ public class StrategoControl {
 			execute("create gui := new StrategoGUI()");
 			execute("gui.setInstance(inst)");
 			execute("gui.run()");
-			execute("gui.sendBoard()");
+			execute("gui.sendInstance()");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

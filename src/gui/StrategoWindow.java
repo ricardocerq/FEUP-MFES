@@ -1,6 +1,7 @@
 package gui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,7 +15,6 @@ import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.WindowConstants;
-import java.awt.Color;
 
 public class StrategoWindow extends JFrame {
 	private static final long serialVersionUID = 1L;
@@ -47,7 +47,7 @@ public class StrategoWindow extends JFrame {
 		// Allow Overture to do a controlled shutdown
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		this.model = new Model();
-
+		
 		// add buttons
 		btn1 = new JButton("Button 1");
 		btn2 = new JButton("Button 2");
@@ -62,6 +62,8 @@ public class StrategoWindow extends JFrame {
 		pack();
 
 		setLocationRelativeTo(null);
+		
+		
 	}
 
 	public void init() {
