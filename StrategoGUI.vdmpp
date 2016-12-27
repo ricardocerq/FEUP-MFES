@@ -1,0 +1,60 @@
+class StrategoGUI
+	instance variables
+		public graphics : gui_Graphics := new gui_Graphics();
+		public inst : StrategoState`Instance;
+		
+	operations
+	
+		public run: () ==> ()
+			run() == (
+				graphics.init();
+	 	);
+	 	
+	 	public sendBoard: () ==> ()
+			sendBoard() ==(
+				dcl str: seq of char := "";
+				let f = getChar(inst) in (
+					for y = 1 to 10 do (
+						for x = 1 to 10 do (
+							str := str ^ f(mk_Stratego`Point(x,y)) ^ "\t";
+						);
+						str := str ^ "\n";
+					)
+				);
+				graphics.board(str);
+			)
+		;
+		
+		public setInstance: StrategoState`Instance ==> () 
+			setInstance(inst2) ==(
+				inst := inst2
+			)
+		;
+		
+	functions
+		
+		public getChar: StrategoState`Instance -> Stratego`Point -> seq of char
+			getChar(inst)(p) ==
+				if(Stratego`isLake(p)) then
+					"~~"
+				else	(
+					let piece = StrategoState`pieceAt(inst.board)(p) in (
+						if piece = nil then
+							"--" 
+						else 
+						(
+							let ex = if(piece.team = <Blu>) then "b" else "r" in (
+								if piece.character = <Flag>
+									then "F"^ex
+									else if piece.character = <Bomb>
+													then "B"^ex
+													else let str = VDMUtil`val2seq_of_char[nat](StrategoRules`getStrength(inst.ruleSet)(piece.character)-1) in (
+														[str(len str)]^ex
+													)
+							)
+						)
+					)
+				)
+		;
+
+end StrategoGUI
