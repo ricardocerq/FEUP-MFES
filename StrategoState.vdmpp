@@ -172,6 +172,8 @@ class StrategoState
 				let f = lambda t: Stratego`Team & mk_Stratego`Piece(<Flag>, t) not in set rng inst.board in (
 					f(<Red>) or f(<Blu>)
 				)
+				
+			post RESULT <=> (mk_Stratego`Piece(<Flag>, <Red>) not in set rng inst.board or mk_Stratego`Piece(<Flag>, <Blu>) not in set rng inst.board)
 		;
 	operations
 	
