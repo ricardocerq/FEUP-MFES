@@ -8,11 +8,8 @@ class StrategoOperations
 					for y = 1 to 10 do (
 						for x = 1 to 10 do (
 								str := str ^ f(mk_Stratego`Point(x,y)) ^ "  ";
-								--printPiece(f, StrategoState`pieceAt(inst.board)(mk_Stratego`Point(x,y)));
-								--IO`print(" ");
 						);
 						str := str ^ "\n\n";
-						--IO`print("\n");
 					)
 				);
 				IO`println(str);
