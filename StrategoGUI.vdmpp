@@ -25,6 +25,11 @@ class StrategoGUI
 			)
 		;
 		
+		public sendInstance: () ==> ()
+			sendInstance() ==
+				graphics.inst(inst)
+		;
+		
 		public setInstance: StrategoState`Instance ==> () 
 			setInstance(inst2) == (
 				inst := inst2;
