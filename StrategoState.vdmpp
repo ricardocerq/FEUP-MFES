@@ -162,7 +162,7 @@ class StrategoState
 				
 				)
 			)
-			pre len ordersBlu = 40 and len ordersRed = 40
+			pre len ordersBlu = StrategoRules`getNumberOfCharacters() and len ordersRed = StrategoRules`getNumberOfCharacters()
 		;
 		
 		--public fillBoard: Strate

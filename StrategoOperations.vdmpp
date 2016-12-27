@@ -16,16 +16,6 @@ class StrategoOperations
 			)
 		;
 		
-		public static printPiece: (Stratego`Piece -> seq of char) * [Stratego`Piece] ==> ()
-			printPiece(f, piece) == (
-				if (piece = nil) then 
-					IO`println(" ")
-				else if (piece.team = <Blu>) then 
-						IO`print(f(piece))
-					else interop_io`printRed(f(piece))
-			)
-		;
-		
 	functions
 	
 		public getChar: StrategoState`Instance -> Stratego`Point -> seq of char
