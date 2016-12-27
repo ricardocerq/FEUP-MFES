@@ -13,7 +13,7 @@ class StrategoGUI
 	 	public sendBoard: () ==> ()
 			sendBoard() ==(
 				dcl str: seq of char := "";
-				let f = getChar(inst) in (
+				let f = StrategoOperations`getChar(inst) in (
 					for y = 1 to 10 do (
 						for x = 1 to 10 do (
 							str := str ^ f(mk_Stratego`Point(x,y)) ^ "  ";
@@ -31,31 +31,6 @@ class StrategoGUI
 			)
 			post inst = inst2
 		;
-		
-	functions
-		
-		public getChar: StrategoState`Instance -> Stratego`Point -> seq of char
-			getChar(inst)(p) ==
-				if(Stratego`isLake(p)) then
-					"~~"
-				else	(
-					let piece = StrategoState`pieceAt(inst.board)(p) in (
-						if piece = nil then
-							"--" 
-						else 
-						(
-							let ex = if(piece.team = <Blu>) then "b" else "r" in (
-								if piece.character = <Flag>
-									then "F"^ex
-									else if piece.character = <Bomb>
-													then "B"^ex
-													else let str = VDMUtil`val2seq_of_char[nat](StrategoRules`getStrength(inst.ruleSet)(piece.character)-1) in (
-														[str(len str)]^ex
-													)
-							)
-						)
-					)
-				)
-		;
+	
 
 end StrategoGUI
