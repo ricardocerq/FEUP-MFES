@@ -1,7 +1,7 @@
 class StrategoGUI
 	instance variables
 		public graphics : gui_Graphics := new gui_Graphics();
-		public inst : StrategoState`Instance;
+		public inst : [StrategoState`Instance] := nil;
 		
 	operations
 	
@@ -16,9 +16,9 @@ class StrategoGUI
 				let f = getChar(inst) in (
 					for y = 1 to 10 do (
 						for x = 1 to 10 do (
-							str := str ^ f(mk_Stratego`Point(x,y)) ^ "\t";
+							str := str ^ f(mk_Stratego`Point(x,y)) ^ "  ";
 						);
-						str := str ^ "\n";
+						str := str ^ "\n\n";
 					)
 				);
 				graphics.board(str);
@@ -26,9 +26,10 @@ class StrategoGUI
 		;
 		
 		public setInstance: StrategoState`Instance ==> () 
-			setInstance(inst2) ==(
-				inst := inst2
+			setInstance(inst2) == (
+				inst := inst2;
 			)
+			post inst = inst2
 		;
 		
 	functions
