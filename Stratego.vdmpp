@@ -39,10 +39,14 @@ class Stratego
 	values
 		
 	functions
+	
 		public dist: Point -> Point -> real
-			dist(src)(dst) == 
+			dist(src)(dst) == 	
 				MATH`sqrt((src.x-dst.x)*(src.x-dst.x) + (src.y-dst.y)*(src.y-dst.y))
+				
+			post RESULT * RESULT = (src.x-dst.x)*(src.x-dst.x) + (src.y-dst.y)*(src.y-dst.y) 
 		;
+		
 		public alignment: Point -> Point -> (bool*bool)
 			alignment(p1)(p2) ==
 				mk_(p1.x = p2.x, p1.y = p2.y)
@@ -60,34 +64,32 @@ class Stratego
 		
 		public getOpponent: Team -> Team
 			getOpponent(pl) ==
-			if pl = <Red> 
-				then <Blu> 
-				else <Red>
+				if pl = <Red> 
+					then <Blu> 
+					else <Red>
 			
 			post RESULT <> pl
 		;
 		
 		public inInterval: nat * nat -> nat1 -> bool
 			inInterval(a,b)(val) ==
-			let maxMin = Utils`maxAndMin(a, b),
-					fl = maxMin.#2,
-					ceil = maxMin.#1 in (
-					val > fl and val < ceil
-			)
+				Utils`applyToMinAndMax[bool]
+				(lambda min: real, max: real & val > min and val < max)
+				(a)
+				(b)
 		;
 		
 		public validDim: nat1 -> bool 
 			validDim(v) ==
-			inInterval(0, StrategoRules`boardSize+1)(v)
+				inInterval(0, StrategoRules`boardSize+1)(v)
 		;
 		
 		public intervalSet: nat*nat -> set of nat1
-			intervalSet(a,b) ==
-			let maxMin = Utils`maxAndMin(a, b),
-					fl = maxMin.#2,
-					ceil = maxMin.#1 in (
-					{fl+1, ..., ceil-1}
-			)
+			intervalSet(a,b) ==	
+				Utils`applyToMinAndMax[set of nat1]
+				(lambda min: real, max: real & {min+1, ..., max-1})
+				(a)
+				(b)
 			
 			pre a >= 0 and b >= 0
 			post forall e in set RESULT & inInterval(a, b)(e)
@@ -95,17 +97,17 @@ class Stratego
 		
 		public validDimSet: () -> set of nat1
 			validDimSet() ==
-			intervalSet(0, StrategoRules`boardSize+1)
+				intervalSet(0, StrategoRules`boardSize+1)
 		;
 		
 		public validPoint: Point -> bool 
 			validPoint(p) ==
-			validDim(p.x) and validDim(p.y)
+				validDim(p.x) and validDim(p.y)
 		;
 		
 		public invertedPoint: Point -> Point
 			invertedPoint(p) == 
-			mk_Point(p.x, StrategoRules`boardSize - p.y + 1)
+				mk_Point(p.x, StrategoRules`boardSize - p.y + 1)
 				
 			pre validPoint(p)
 			post validPoint(p) and p.x = RESULT.x and p.y = StrategoRules`boardSize - RESULT.y + 1
@@ -113,45 +115,45 @@ class Stratego
 		
 		public pointsInRanges: set of nat1 * set of nat1 -> set of Point
 			pointsInRanges(xrange, yrange) ==
-			{ mk_Point(x,y) | x in set xrange , y in set yrange }
+				{ mk_Point(x,y) | x in set xrange , y in set yrange }
 			
 			post forall a in set RESULT & validPoint(a)
 		;
 		
 		public allPoints: () -> set of Point
 			allPoints() ==
-			pointsInRanges(validDimSet(),validDimSet())
+				pointsInRanges(validDimSet(),validDimSet())
 		;
 		
 		public pointsFiltered: (() -> set of Point) -> (Point->bool) -> set of Point
 			 pointsFiltered(gen)(f)==
-			 Utils`filterSet[Point](f)(gen())
+			 	Utils`filterSet[Point](f)(gen())
 		;
 		
 		public allPointsFiltered: (Point->bool) -> set of Point
 			 allPointsFiltered(f)==
-			 pointsFiltered(allPoints)(f)
+			 	pointsFiltered(allPoints)(f)
 		;
 		
 		public isInBackRowBlu: Point -> bool
 			isInBackRowBlu(p) ==
-			p.y = 1
+				p.y = 1
 			
 			post RESULT <=> (p.y = 1) -- trivial
 		;
 		
 		public isInBackRowRed: Point -> bool
-		isInBackRowRed(p) ==
-			p.y = StrategoRules`boardSize
+			isInBackRowRed(p) ==
+				p.y = StrategoRules`boardSize
 			
 			post RESULT <=> (p.y = StrategoRules`boardSize) -- trivial
 		;
 		
 		public isInBackRow: Team -> Point -> bool
 			isInBackRow(pl)(p) ==
-			if pl = <Red>
-				then isInBackRowRed(p)
-				else isInBackRowBlu(p)
+				if pl = <Red>
+					then isInBackRowRed(p)
+					else isInBackRowBlu(p)
 				
 			pre validPoint(p)
 			post pl = <Red> => ((RESULT = true) <=> isInBackRowRed(p)) and
@@ -160,23 +162,23 @@ class Stratego
 		
 		public isInTeamAreaBlu: Point -> bool
 			isInTeamAreaBlu(p) ==
-			p.y > 0 and p.y <= StrategoRules`boardSize * StrategoRules`sideProportion
+				p.y > 0 and p.y <= StrategoRules`boardSize * StrategoRules`sideProportion
 			
 			post RESULT <=> (p.y > 0 and p.y <= StrategoRules`boardSize * StrategoRules`sideProportion) -- trivial
 		;
 		
 		public isInTeamAreaRed: Point -> bool
 			isInTeamAreaRed(p) ==
-			p.y <= StrategoRules`boardSize and p.y > StrategoRules`boardSize - StrategoRules`boardSize * StrategoRules`sideProportion
+				p.y <= StrategoRules`boardSize and p.y > StrategoRules`boardSize - StrategoRules`boardSize * StrategoRules`sideProportion
 			
 			post RESULT <=> (p.y <= StrategoRules`boardSize and p.y > StrategoRules`boardSize - StrategoRules`boardSize * StrategoRules`sideProportion) --trivial
 		;
 		
 		public isInTeamArea: Team -> Point -> bool
 			isInTeamArea(pl)(p) ==
-			if pl = <Red>
-				then isInTeamAreaRed(p)
-				else isInTeamAreaBlu(p)
+				if pl = <Red>
+					then isInTeamAreaRed(p)
+					else isInTeamAreaBlu(p)
 				
 			pre validPoint(p)
 			post pl = <Red> => ((RESULT = true) <=> isInTeamAreaRed(p)) and
@@ -184,7 +186,7 @@ class Stratego
 		;
 		public isLake:Point -> bool
 			isLake(p) == 
-			p in set StrategoRules`lakes
+				p in set StrategoRules`lakes
 		;
 		public pointsBetween: Point -> Point ->  set of Point
 			pointsBetween(src)(dst) ==
@@ -194,62 +196,76 @@ class Stratego
 							then pointsInRanges({src.x}, intervalSet(src.y, dst.y))
 							else pointsInRanges(intervalSet(src.x, dst.x), {src.y})
 				)
-				pre aligned(src)(dst)
+			
+			pre aligned(src)(dst)
+		;
+		
+		public toPiece:  Team -> Character -> Piece
+			toPiece(team)(character) ==
+				mk_Piece(character, team)
+		;
+		
+		public toPieces: seq of Character-> Team -> seq of Piece
+			toPieces(characters)(team) ==
+				Utils`mapFunctionSeq[Stratego`Character, Stratego`Piece](toPiece(team))(characters)
+		;
+		
+		public toCharacters: seq of Piece -> seq of Character
+			toCharacters(pieces) ==
+				Utils`mapFunctionSeq[Stratego`Piece, Stratego`Character](lambda p: Piece & p.character)(pieces)
 		;
 		
 		public isValidMove: StrategoState`Instance -> Move -> bool
 			isValidMove(inst)(m) ==
-			not isLake(m.src) and
-			not isLake(m.dst) and 
-			aligned(m.src)(m.dst) and 
-			not StrategoState`repeatedMove(inst.players(inst.currentTeam))(m) and
-			let srcPiece = StrategoState`pieceAt(inst.board)(m.src),
-					dstPiece = StrategoState`pieceAt(inst.board)(m.dst),
-					ruleset = inst.ruleSet,
-					pointsInBetween = pointsBetween(m.src)(m.dst),
-					anyLakesInBetween = Utils`reduceSet[Stratego`Point, bool](lambda b: bool, p: Stratego`Point & b or isLake(p))(false)(pointsInBetween),
-					piecesInBetween = Utils`mapFunctionSet[Point, [Piece]](StrategoState`pieceAt(inst.board))(pointsInBetween)
-					in (
-					not anyLakesInBetween and
-					srcPiece <> nil and
-					srcPiece.team = inst.currentTeam and
-					(dstPiece = nil or dstPiece.team = getOpponent(srcPiece.team)) and
-					dist(m.src)(m.dst) <= StrategoRules`getMovementRange(ruleset)(srcPiece.character) and
-					(piecesInBetween = {} or piecesInBetween = {nil})
-			)
+				not isLake(m.src) and
+				not isLake(m.dst) and 
+				aligned(m.src)(m.dst) and 
+				not StrategoState`repeatedMove(inst.players(inst.currentTeam))(m) and
+				let srcPiece = StrategoState`pieceAt(inst.board)(m.src),
+						dstPiece = StrategoState`pieceAt(inst.board)(m.dst),
+						ruleset = inst.ruleSet,
+						pointsInBetween = pointsBetween(m.src)(m.dst),
+						anyLakesInBetween = Utils`reduceSet[Stratego`Point, bool](lambda b: bool, p: Stratego`Point & b or isLake(p))(false)(pointsInBetween),
+						piecesInBetween = Utils`mapFunctionSet[Point, [Piece]](StrategoState`pieceAt(inst.board))(pointsInBetween)
+						in (
+						not anyLakesInBetween and
+						srcPiece <> nil and
+						srcPiece.team = inst.currentTeam and
+						(dstPiece = nil or dstPiece.team = getOpponent(srcPiece.team)) and
+						dist(m.src)(m.dst) <= StrategoRules`getMovementRange(ruleset)(srcPiece.character) and
+						(piecesInBetween = {} or piecesInBetween = {nil})
+				)
+				
 			pre validPoint(m.src) and validPoint(m.dst)
 		;
 		
 		public executeMove: StrategoState`Instance -> Move -> StrategoState`Instance
 			executeMove(inst)(m) == 
-			let srcPiece = StrategoState`pieceAt(inst.board)(m.src),
-					dstPiece = StrategoState`pieceAt(inst.board)(m.dst),
-					attackRes = StrategoRules`resolveAttack(inst.ruleSet)(srcPiece)(dstPiece),
-					currPlayerCap = if attackRes.#1 then nil else srcPiece,
-					nextPlayerCap = if attackRes.#2 then nil else dstPiece,
-					currTeam = inst.currentTeam,
-					currPlayer = inst.players(currTeam),
-					nextTeam = getOpponent(inst.currentTeam),
-					nextPlayer = inst.players(nextTeam) in (
-				mk_StrategoState`Instance(
-					inst.ruleSet, 
-					nextTeam,
-					inst.players ++ {
-							currTeam |-> StrategoState`addCapture(StrategoState`addMovePlayer(currPlayer)(m))(currPlayerCap),
-							nextTeam |-> StrategoState`addCapture(nextPlayer)(nextPlayerCap)
-					},
-					StrategoState`addMoveBoard(inst.board)(m)(attackRes)
+				let srcPiece = StrategoState`pieceAt(inst.board)(m.src),
+						dstPiece = StrategoState`pieceAt(inst.board)(m.dst),
+						attackRes = StrategoRules`resolveAttack(inst.ruleSet)(srcPiece)(dstPiece),
+						currTeam = inst.currentTeam,
+						currPlayer = inst.players(currTeam),
+						nextTeam = getOpponent(inst.currentTeam) in (
+					mk_StrategoState`Instance(
+						inst.ruleSet, 
+						nextTeam,
+						inst.players ++ {
+								currTeam |-> StrategoState`addMovePlayer(currPlayer)(m)
+						},
+						StrategoState`addMoveBoard(inst.board)(m)(attackRes)
+					)
 				)
-			)
+				
 			pre isValidMove(inst)(m)
 		; 
 		
 	operations
 		public Run: () ==> ()
-		Run() == (
-			graphics.init();
-			graphics.testFunc2(StrategoState`setBoard(StrategoState`defaultStartingInstance(), StrategoState`fillBoardRandom(StrategoState`defaultStartingInstance().ruleSet)));
-	 	)
+			Run() == (
+				graphics.init();
+				graphics.testFunc2(StrategoState`setBoard(StrategoState`defaultStartingInstance(), StrategoState`fillBoardRandom(StrategoState`defaultStartingInstance().ruleSet)));
+	 	);
 
 end Stratego
 

@@ -9,4 +9,5 @@ class gui_Graphics
 		
 		public testFunc2 : StrategoState`Instance ==> ()
 		testFunc2(inst) == is not yet specified;
+
 end gui_Graphics

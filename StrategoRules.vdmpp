@@ -29,10 +29,14 @@ class StrategoRules
 			cannotRescue: set of Stratego`Character
 			cannotBeRescued: set of Stratego`Character
 			
-			inv mk_RuleSet(-,-,-,m,-,smr,-,-,-) == Utils`reduceMap[?, nat, nat]((lambda acc: nat, -: ?, n: nat & acc + n))(0)(m)
-				= boardSize * boardSize * sideProportion
-				
-				and smr(<Flag>) = 0
+			inv mk_RuleSet(-,-,-,m,-,smr,-,-,-) == 
+					Utils`reduceMap[?, nat, nat]
+					((lambda acc: nat, -: ?, n: nat & acc + n))
+					(0)
+					(m)
+						= boardSize * boardSize * sideProportion
+					
+					and smr(<Flag>) = 0
 		;
 				
 	operations
@@ -40,54 +44,54 @@ class StrategoRules
 		functions
 			public getDefaultRuleSet: () -> RuleSet
 				getDefaultRuleSet() ==
-				mk_RuleSet(
-					 2, 
-					 false, 
-					 false, 
-					 {
-						<Flag> |-> 1 ,
-						<Bomb> |-> 6 ,
-						<Spy> |-> 1 ,
-						<Scout> |-> 8 ,
-						<Miner> |-> 5 ,
-						<Sergeant> |-> 4 ,
-						<Lieutenant> |-> 4 ,
-						<Captain> |-> 4 ,
-						<Major> |-> 3 ,
-						<Colonel> |-> 2 ,
-						<General> |-> 1 ,
-						<Marshal> |-> 1 
-					}, 
-					[
-						<Flag>,
-						<Spy>,
-						<Scout>,
-						<Miner>,
-						<Sergeant>,
-						<Lieutenant>,
-						<Captain>,
-						<Major>,
-						<Colonel>,
-						<General>,
-						<Marshal>,
-						<Bomb>
-					], 
-					{
-						<Flag> |-> 0 ,
-						<Bomb> |-> 0 ,
-						<Scout> |-> boardSize
-					}, 
-					{
-						<Spy> |-> <Marshal>,
-						<Miner> |-> <Bomb>
-					}, 
-					{
-						<Scout>
-					}, 
-					{
-						<Bomb>
-					}
-				)
+					mk_RuleSet(
+						 2, 
+						 false, 
+						 false, 
+						 {
+							<Flag> |-> 1 ,
+							<Bomb> |-> 6 ,
+							<Spy> |-> 1 ,
+							<Scout> |-> 8 ,
+							<Miner> |-> 5 ,
+							<Sergeant> |-> 4 ,
+							<Lieutenant> |-> 4 ,
+							<Captain> |-> 4 ,
+							<Major> |-> 3 ,
+							<Colonel> |-> 2 ,
+							<General> |-> 1 ,
+							<Marshal> |-> 1 
+						}, 
+						[
+							<Flag>,
+							<Spy>,
+							<Scout>,
+							<Miner>,
+							<Sergeant>,
+							<Lieutenant>,
+							<Captain>,
+							<Major>,
+							<Colonel>,
+							<General>,
+							<Marshal>,
+							<Bomb>
+						], 
+						{
+							<Flag> |-> 0 ,
+							<Bomb> |-> 0 ,
+							<Scout> |-> boardSize
+						}, 
+						{
+							<Spy> |-> <Marshal>,
+							<Miner> |-> <Bomb>
+						}, 
+						{
+							<Scout>
+						}, 
+						{
+							<Bomb>
+						}
+					)
 			;
 		
 			public getStrength: RuleSet->Stratego`Character-> nat
@@ -106,7 +110,7 @@ class StrategoRules
 			
 			public getNumberOfCharacters: () -> nat
 				getNumberOfCharacters() ==
-				boardSize * sideProportion * boardSize
+					boardSize * sideProportion * boardSize
 			;
 			
 			public getAllCharacters: RuleSet -> seq of Stratego`Character 
@@ -116,31 +120,40 @@ class StrategoRules
 							((lambda acc: seq of Stratego`Character & acc ^ [c])**m)([])
 						)
 						(ruleSet.multiplicities)
+					post Utils`countElems[Stratego`Character](RESULT) = ruleSet.multiplicities
+			;
+			
+			public getAllPieces: RuleSet -> Stratego`Team -> seq of Stratego`Piece
+				getAllPieces(ruleSet)(team) ==
+					Stratego`toPieces(getAllCharacters(ruleSet))(team)
+				
+				post (forall el in seq RESULT & el.team = team) and
+							Stratego`toCharacters(RESULT) = getAllCharacters(ruleSet)
 			;
 			
 			public resolveAttack: RuleSet -> Stratego`Piece -> [Stratego`Piece] -> (bool*bool)
 				resolveAttack(ruleset)(p1)(p2) ==
-				if(p2 = nil) then 
-					mk_(true, false)
-				else if(p1.character = p2.character) then (
-					if(ruleset.agressorAdvantage) then
-						mk_(true,false)
-					else 
-						mk_(false,false)
-				)
-				else (
-					if(p1.character in set dom ruleset.specialStrengths and ruleset.specialStrengths(p1.character) = p2.character) then
+					if(p2 = nil) then 
 						mk_(true, false)
+					else if(p1.character = p2.character) then (
+						if(ruleset.agressorAdvantage) then
+							mk_(true,false)
+						else 
+							mk_(false,false)
+					)
 					else (
-						let str = getStrength(ruleset) in (
-								if(str(p1.character) > str(p2.character)) then
-									mk_(true, false)
-								else 
-									mk_(false,true)
-								
+						if(p1.character in set dom ruleset.specialStrengths and ruleset.specialStrengths(p1.character) = p2.character) then
+							mk_(true, false)
+						else (
+							let str = getStrength(ruleset) in (
+									if(str(p1.character) > str(p2.character)) then
+										mk_(true, false)
+									else 
+										mk_(false,true)
+									
+							)
 						)
 					)
-				)
 				pre p2 = nil or p1.team <> p2.team
 			;
 			

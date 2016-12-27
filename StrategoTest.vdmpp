@@ -15,8 +15,6 @@ class StrategoTest is subclass of TestCase
 		  IO`print(result.toString());
 		);
 		
-		
-		
 		public test1() == (
 			dcl rules: StrategoRules`RuleSet := StrategoRules`getDefaultRuleSet();
 			dcl positions: set of Stratego`Point := Stratego`allPoints();
@@ -35,6 +33,7 @@ class StrategoTest is subclass of TestCase
 			Assert`assertTrue(Utils`sprintf("Red and blue backs should have same cardinality, but are: {} and {}", [card redBack, card bluBack]), card bluBack = card redBack);
 			Assert`assertTrue(Utils`sprintf("Red and blue backs should be symmetric, but are \n {} \n{}", [redBack, bluBack]), symmetricAreas(bluBack, redBack));
 		);
+		
 		public test2() == (
 			dcl inst: StrategoState`Instance := StrategoState`defaultStartingInstance();
 			inst := StrategoState`setBoard(inst, StrategoState`fillBoardRandom(inst.ruleSet));
