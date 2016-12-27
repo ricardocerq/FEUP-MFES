@@ -8,15 +8,17 @@ public class StrategoControl {
 
 	public StrategoControl(RemoteInterpreter intrprtr) {
 		interpreter = intrprtr;
-		Controller.strategoCtrl = this;
+		StrategoWindow.strategoCtrl = this;
 	}
 
 	public void init() {
 		try {
 			execute("create inst := StrategoState`defaultStartingInstance()");
 			execute("inst := StrategoState`setBoard(inst, StrategoState`fillBoardRandom(inst.ruleSet))");
-			execute("create strat := new Stratego();");
-			execute("strat.Run()");
+			execute("create gui := new StrategoGUI()");
+			execute("gui.setInstance(inst)");
+			execute("gui.run()");
+			execute("gui.sendBoard()");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

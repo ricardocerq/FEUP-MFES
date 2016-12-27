@@ -16,7 +16,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.WindowConstants;
 import java.awt.Color;
 
-public class Controller extends JFrame {
+public class StrategoWindow extends JFrame {
 	private static final long serialVersionUID = 1L;
 
 	JPanel buttonPanel = new JPanel();
@@ -25,10 +25,10 @@ public class Controller extends JFrame {
 	JButton btn2;
 
 	Model model;
-	View view;
+	StrategoPanel view;
 	public static StrategoControl strategoCtrl;
 
-	public Controller() {
+	public StrategoWindow() {
 		// Use OS look and feel
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -66,9 +66,9 @@ public class Controller extends JFrame {
 
 	public void init() {
 		try {
-			view = new View(model);
+			view = new StrategoPanel(model);
 		} catch (IOException ex) {
-			Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(StrategoWindow.class.getName()).log(Level.SEVERE, null, ex);
 		}
 
 		attachListenersToComponents();

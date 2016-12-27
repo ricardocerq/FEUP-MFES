@@ -10,7 +10,7 @@ import java.util.*;
 
 import javax.swing.JPanel;
 
-class View extends JPanel implements Observer, MouseListener, MouseMotionListener {
+class StrategoPanel extends JPanel implements Observer, MouseListener, MouseMotionListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -18,7 +18,7 @@ class View extends JPanel implements Observer, MouseListener, MouseMotionListene
 
 	transient static BufferedImage piece;
 	
-	View(Model model) throws IOException {
+	StrategoPanel(Model model) throws IOException {
 		super();
 		this.model = model;
 		this.setBackground(Color.WHITE);
