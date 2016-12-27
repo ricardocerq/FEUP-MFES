@@ -13,8 +13,7 @@ public class StrategoControl {
 
 	public void init() {
 		try {
-			execute("create inst := StrategoState`defaultStartingInstance()");
-			execute("inst := StrategoState`setBoard(inst, StrategoState`fillBoardRandom(inst.ruleSet))");
+			execute("create inst := let ini = StrategoState`defaultStartingInstance() in (StrategoState`setBoard(ini, StrategoState`fillBoardRandom(ini.ruleSet)))");
 			execute("create gui := new StrategoGUI()");
 			execute("gui.setInstance(inst)");
 			execute("gui.run()");

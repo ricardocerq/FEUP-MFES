@@ -39,7 +39,7 @@ public class Graphics implements Serializable {
 			res += lst.get(i).charValue(null);
 		}
 		
-		System.out.println("Banana:" + res);
+		System.out.println("Banana:\n" + res);
 		
 		return new VoidValue();
 	}
