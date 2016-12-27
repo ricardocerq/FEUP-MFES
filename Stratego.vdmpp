@@ -202,11 +202,15 @@ class Stratego
 			not isLake(m.src) and
 			not isLake(m.dst) and 
 			aligned(m.src)(m.dst) and 
+			not StrategoState`repeatedMove(inst.players(inst.currentTeam))(m) and
 			let srcPiece = StrategoState`pieceAt(inst.board)(m.src),
 					dstPiece = StrategoState`pieceAt(inst.board)(m.dst),
 					ruleset = inst.ruleSet,
-					piecesInBetween = Utils`mapFunctionSet[Point, [Piece]](StrategoState`pieceAt(inst.board))(pointsBetween(m.src)(m.dst))
+					pointsInBetween = pointsBetween(m.src)(m.dst),
+					anyLakesInBetween = Utils`reduceSet[Stratego`Point, bool](lambda b: bool, p: Stratego`Point & b or isLake(p))(false)(pointsInBetween),
+					piecesInBetween = Utils`mapFunctionSet[Point, [Piece]](StrategoState`pieceAt(inst.board))(pointsInBetween)
 					in (
+					not anyLakesInBetween and
 					srcPiece <> nil and
 					srcPiece.team = inst.currentTeam and
 					(dstPiece = nil or dstPiece.team = getOpponent(srcPiece.team)) and

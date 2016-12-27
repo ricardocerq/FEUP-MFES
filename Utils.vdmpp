@@ -171,11 +171,11 @@ class Utils
 				mk_(d,d)
 		;
 		
-		public removeElement[@T]: seq of @T -> nat1 -> seq of @T
-			removeElement(list)(i) ==
+		public removeIndex[@T]: seq of @T -> nat1 -> seq of @T
+			removeIndex(list)(i) ==
 				if(i = 1) then
 					tl list
-					else [hd list] ^ removeElement[@T](tl list)(i-1)
+					else [hd list] ^ removeIndex[@T](tl list)(i-1)
 			pre i >= 1 and i <= len list
 			post len list - 1 = len RESULT
 		;
@@ -184,7 +184,7 @@ class Utils
 			rearrange(orders)(list) ==
 				if(len list = 0) then
 					 []
-				else [list(hd orders)] ^ rearrange[@T](tl orders)(removeElement[@T](list)(hd orders))
+				else [list(hd orders)] ^ rearrange[@T](tl orders)(removeIndex[@T](list)(hd orders))
 			pre isOrdering(orders) and
 					len orders = len list
 		;
@@ -196,6 +196,11 @@ class Utils
 			pre e in set elems list
 			post list(RESULT) = e
 		;
+		
+		public removeElem[@T]: seq of @T -> @T -> seq of @T
+			removeElem(list)(e) == 
+				removeIndex[@T](list)(indexOf[@T](list)(e))
+		; 
 		
 		public createMap[@L, @R]: seq of @L -> seq of @R -> map @L to @R
 			createMap(left)(right) == 

@@ -103,10 +103,12 @@ class StrategoRules
 						1
 					)
 			;
+			
 			public getNumberOfCharacters: () -> nat
 				getNumberOfCharacters() ==
 				boardSize * sideProportion * boardSize
 			;
+			
 			public getAllCharacters: RuleSet -> seq of Stratego`Character 
 				getAllCharacters(ruleSet) ==
 					conc Utils`mapFunctionMap[Stratego`Character, nat, seq of Stratego`Character]
@@ -141,4 +143,6 @@ class StrategoRules
 				)
 				pre p2 = nil or p1.team <> p2.team
 			;
+			
+			
 end StrategoRules
