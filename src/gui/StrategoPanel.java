@@ -29,6 +29,8 @@ class StrategoPanel extends JPanel implements Observer, MouseListener, MouseMoti
 	
 	transient static BufferedImage piece;
 	
+	ValueFactory v = new ValueFactory();
+	
 	StrategoPanel(Model model, StrategoControl strategoCtrl) throws IOException {
 		super();
 		this.model = model;
@@ -56,11 +58,19 @@ class StrategoPanel extends JPanel implements Observer, MouseListener, MouseMoti
 
 	public void paintComponent(java.awt.Graphics g) {
 		try {
+			int size = Math.min(this.getWidth(), this.getHeight());
+			int startX = getWidth() - size;
+			int startY = getHeight() - size;
+			
+			int squareSize = size / 10;
+			
 			Value val = model.val;
-			ValueFactory v = new ValueFactory();
+			
 			//System.out.println(model);
 			if(val != null){
-				RecordValue instance = val.recordValue(null);
+				ValueList list = val.seqValue(null);
+				
+				RecordValue instance = list.get(0).recordValue(null);
 				ValueMap board = instance.fieldmap.get("board").mapValue(null);
 				ValueList strengths = instance.fieldmap.get("ruleSet").recordValue(null).fieldmap.get("characterStrengths").seqValue(null);
 				
@@ -68,9 +78,11 @@ class StrategoPanel extends JPanel implements Observer, MouseListener, MouseMoti
 					for(int x = 0; x < 10; x++){
 						RecordValue p = v.createRecord("Stratego`Point", new NaturalValue(x+1), new NaturalValue(y+1));
 						Value piece = board.get(p);
-						if(piece == null)
+						if(piece == null){
 							System.out.print("--  ");
-						else {
+							g.setColor(Color.GRAY);
+							g.fillRect(startX + x*squareSize, startY + y*squareSize, squareSize, squareSize);
+						} else {
 							RecordValue pieceRecord = piece.recordValue(null);
 							
 							String str = Integer.toString(strengths.indexOf(pieceRecord.fieldmap.get("character")) - 1);
@@ -82,6 +94,10 @@ class StrategoPanel extends JPanel implements Observer, MouseListener, MouseMoti
 							
 							String team = pieceRecord.fieldmap.get("team").toString().substring(1, 2).toLowerCase();
 							System.out.print(str + "" + team + "  ");
+							if(team.equals("r"))
+								g.setColor(Color.RED);
+							else g.setColor(Color.BLUE);
+							g.fillRect(startX + x*squareSize, startY + y*squareSize, squareSize, squareSize);
 						}
 					}
 					System.out.println("\n");
@@ -99,6 +115,7 @@ class StrategoPanel extends JPanel implements Observer, MouseListener, MouseMoti
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		System.out.println(model.val);
 	}
 
 	@Override

@@ -53,4 +53,12 @@ public class Graphics implements Serializable {
 		
 		return new VoidValue();
 	}
+	
+	public Value send(Value str) throws ValueException {
+		System.out.println(str);
+		
+		model.notifyObservers(str);
+		
+		return new VoidValue();
+	}
 }
