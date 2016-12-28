@@ -120,6 +120,7 @@ class StrategoPanel extends JPanel implements Observer, MouseListener, MouseMoti
 				ValueList list = val.seqValue(null);
 				
 				RecordValue instance = list.get(0).recordValue(null);
+				
 				ValueMap board = instance.fieldmap.get("board").mapValue(null);
 				ValueList strengths = instance.fieldmap.get("ruleSet").recordValue(null).fieldmap.get("characterStrengths").seqValue(null);
 				
@@ -158,10 +159,10 @@ class StrategoPanel extends JPanel implements Observer, MouseListener, MouseMoti
 						} else {
 							RecordValue pieceRecord = piece.recordValue(null);
 							
-							String str = Integer.toString(strengths.indexOf(pieceRecord.fieldmap.get("character")) - 1);
+							String str = Integer.toString(strengths.indexOf(pieceRecord.fieldmap.get("character")));
 							if(str.equals("0"))
 								str = "F";
-							else if(str.equals("10"))
+							else if(str.equals("11"))
 								str = "B";
 							else str = str.substring(str.length()-1, str.length());
 							
