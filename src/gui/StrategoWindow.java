@@ -68,7 +68,7 @@ public class StrategoWindow extends JFrame {
 
 	public void init() {
 		try {
-			view = new StrategoPanel(model);
+			view = new StrategoPanel(model, strategoCtrl);
 		} catch (IOException ex) {
 			Logger.getLogger(StrategoWindow.class.getName()).log(Level.SEVERE, null, ex);
 		}

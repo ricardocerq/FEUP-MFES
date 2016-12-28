@@ -7,6 +7,10 @@ public class StrategoControl {
 	
 	private RemoteInterpreter interpreter;
 
+	public RemoteInterpreter getInterpreter() {
+		return interpreter;
+	}
+
 	public StrategoControl(RemoteInterpreter intrprtr) {
 		interpreter = intrprtr;
 		StrategoWindow.strategoCtrl = this;
