@@ -289,7 +289,7 @@ class StrategoPanel extends JPanel implements Observer, MouseListener, MouseMoti
 							String str = "gr.sendData(StrategoOperations`getGameData(Stratego`executeMove(" + model.val.seqValue(null).get(0) + ")(" + 
 									valueFactory.createRecord("Stratego`Move", sel1, sel2)
 									+ ")))";
-							this.strategoCtrl.execute(str);
+							System.out.println("return " + this.strategoCtrl.execute(str));
 							//this.strategoCtrl.execute("gr.board(\"hello\")");
 							//this.strategoCtrl.execute("gr.sendData([mk_Point(1,1)])");
 						} else {
