@@ -56,12 +56,12 @@ class StrategoPanel extends JPanel implements Observer, MouseListener, MouseMoti
 		this.setBackground(Color.WHITE);
 		
 		pieces_red = new BufferedImage[12];
-		for(int i = -1; i <= 10; i++)
-			pieces_red[i + 1] = ImageIO.read(this.getClass().getResourceAsStream("/res/red_" + i + ".png"));
+		for(int i = 0; i <= 11; i++)
+			pieces_red[i] = ImageIO.read(this.getClass().getResourceAsStream("/res/red_" + i + ".png"));
 		
 		pieces_blu = new BufferedImage[12];
-		for(int i = -1; i <= 10; i++)
-			pieces_blu[i + 1] = ImageIO.read(this.getClass().getResourceAsStream("/res/blue_" + i + ".png"));
+		for(int i = 0; i <= 11; i++)
+			pieces_blu[i] = ImageIO.read(this.getClass().getResourceAsStream("/res/blue_" + i + ".png"));
 		
 		// Add event listeners
 		this.addMouseListener(this);
