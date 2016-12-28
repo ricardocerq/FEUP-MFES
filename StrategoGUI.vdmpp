@@ -27,7 +27,7 @@ class StrategoGUI
 		
 		public sendInstance: () ==> ()
 			sendInstance() ==(
-				graphics.send([inst, Stratego`possibleMoves(inst)])
+				graphics.sendData([inst, Stratego`possibleMoves(inst)])
 			)
 		;
 		

@@ -19,8 +19,19 @@ class StrategoOperations
 			printBoard(inst) == 
 				IO`println(instanceString(inst))
 		;
+		
+		public static newRandomInstance: () ==> StrategoState`Instance
+			newRandomInstance() ==
+			let ini = StrategoState`defaultStartingInstance() in (StrategoState`setBoard(ini, StrategoState`fillBoardRandom(ini.ruleSet)))
+		;
+		
 	functions
-	
+		
+		public getGameData: StrategoState`Instance -> seq of ?
+			getGameData(inst) ==
+				[inst, Stratego`possibleMoves(inst)]
+		;
+		
 		public getChar: StrategoState`Instance -> Stratego`Point -> seq of char
 			getChar(inst)(p) ==
 				if(Stratego`isLake(p)) then

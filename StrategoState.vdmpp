@@ -182,7 +182,7 @@ class StrategoState
 				let num = StrategoRules`getNumberOfCharacters(),
 						bluOrder = Utils`randomOrdering(num),
 						redOrder = Utils`randomOrdering(num) in (
-					Utils`printf("{}\n{}", [bluOrder, redOrder]);
+					--Utils`printf("{}\n{}", [bluOrder, redOrder]);
 					return fillBoard(ruleSet)(bluOrder)(redOrder);
 				)
 			)
