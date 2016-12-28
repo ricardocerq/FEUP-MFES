@@ -1,8 +1,8 @@
 class StrategoOperations
 	operations
 	
-		public static printBoard: StrategoState`Instance ==> ()
-			printBoard(inst) ==(
+		public static instanceString: StrategoState`Instance ==> seq of char
+			instanceString (inst) ==(
 				dcl str: seq of char := "\n";
 				let f = getChar(inst) in (
 					for y = 1 to 10 do (
@@ -12,10 +12,13 @@ class StrategoOperations
 						str := str ^ "\n\n";
 					)
 				);
-				IO`println(str);
+				return str;
 			)
 		;
-		
+		public static printBoard: StrategoState`Instance ==>()
+			printBoard(inst) == 
+				IO`println(instanceString(inst))
+		;
 	functions
 	
 		public getChar: StrategoState`Instance -> Stratego`Point -> seq of char
