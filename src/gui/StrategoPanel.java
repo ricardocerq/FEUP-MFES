@@ -9,10 +9,14 @@ import java.awt.event.MouseMotionListener;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
 import org.overture.ast.analysis.AnalysisException;
@@ -31,7 +35,8 @@ class StrategoPanel extends JPanel implements Observer, MouseListener, MouseMoti
 
 	StrategoControl strategoCtrl;
 	
-	transient static BufferedImage piece;
+	transient static BufferedImage[] pieces_red;
+	transient static BufferedImage[] pieces_blu;
 	
 	ValueFactory v = new ValueFactory();
 	
@@ -50,7 +55,13 @@ class StrategoPanel extends JPanel implements Observer, MouseListener, MouseMoti
 		
 		this.setBackground(Color.WHITE);
 		
-		//piece = ImageIO.read(new File(this.getClass().getResource("/res/piece.png").getFile()));
+		pieces_red = new BufferedImage[12];
+		for(int i = -1; i <= 10; i++)
+			pieces_red[i + 1] = ImageIO.read(this.getClass().getResourceAsStream("/res/red_" + i + ".png"));
+		
+		pieces_blu = new BufferedImage[12];
+		for(int i = -1; i <= 10; i++)
+			pieces_blu[i + 1] = ImageIO.read(this.getClass().getResourceAsStream("/res/blue_" + i + ".png"));
 		
 		// Add event listeners
 		this.addMouseListener(this);
@@ -160,11 +171,14 @@ class StrategoPanel extends JPanel implements Observer, MouseListener, MouseMoti
 							RecordValue pieceRecord = piece.recordValue(null);
 							
 							String str = Integer.toString(strengths.indexOf(pieceRecord.fieldmap.get("character")));
+							int num = Integer.parseInt(str);
+
 							if(str.equals("0"))
 								str = "F";
 							else if(str.equals("11"))
 								str = "B";
 							else str = str.substring(str.length()-1, str.length());
+							
 							
 							String team = pieceRecord.fieldmap.get("team").toString().substring(1, 2).toLowerCase();
 							System.out.print(str + "" + team + "  ");
@@ -172,8 +186,13 @@ class StrategoPanel extends JPanel implements Observer, MouseListener, MouseMoti
 							if(team.equals("r"))
 								c = Color.RED;
 							else c = Color.BLUE;
-							fillMatrixCircle(g, c, x, y, .75);
-							drawMatrixString(g, Color.WHITE, str, x, y);
+							
+							BufferedImage img = team.equals("r") ? pieces_red[num] : pieces_blu[num];
+							
+							g.drawImage(img, startX + x * squareSize, startY + y * squareSize, squareSize, squareSize, null);
+							
+							//fillMatrixCircle(g, c, x, y, .75);
+							//drawMatrixString(g, Color.WHITE, str, x, y);
 						}
 					}
 					System.out.println("\n");
