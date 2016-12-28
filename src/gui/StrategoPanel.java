@@ -35,8 +35,9 @@ class StrategoPanel extends JPanel implements Observer, MouseListener, MouseMoti
 
 	StrategoControl strategoCtrl;
 	
-	transient static BufferedImage[] pieces_red;
-	transient static BufferedImage[] pieces_blu;
+	transient BufferedImage[] pieces_red;
+	transient BufferedImage[] pieces_blu;
+	transient BufferedImage background;
 	
 	ValueFactory v = new ValueFactory();
 	
@@ -62,6 +63,8 @@ class StrategoPanel extends JPanel implements Observer, MouseListener, MouseMoti
 		pieces_blu = new BufferedImage[12];
 		for(int i = 0; i <= 11; i++)
 			pieces_blu[i] = ImageIO.read(this.getClass().getResourceAsStream("/res/blue_" + i + ".png"));
+		
+		background  = ImageIO.read(this.getClass().getResourceAsStream("/res/background.png"));
 		
 		// Add event listeners
 		this.addMouseListener(this);
@@ -135,13 +138,15 @@ class StrategoPanel extends JPanel implements Observer, MouseListener, MouseMoti
 				ValueMap board = instance.fieldmap.get("board").mapValue(null);
 				ValueList strengths = instance.fieldmap.get("ruleSet").recordValue(null).fieldmap.get("characterStrengths").seqValue(null);
 				
+				g.drawImage(background, startX, startY, 10 * squareSize, 10 * squareSize, null);
+				
 				for(int y = 0; y < 10; y++){
 					for(int x = 0; x < 10; x++){
 						if( (x+1 >= 3 && x+1 <= 4 && y+1 >= 5 && y+1 <= 6) ||(x+1 >= 7 && x+1 <= 8 && y+1 >= 5 && y+1 <= 6)){
 							
-							fillMatrixRect(g, Color.BLUE, x, y);
-							drawMatrixString(g, Color.WHITE, "~", x, y);
-							drawMatrixRect(g, Color.BLACK, x, y);
+							//fillMatrixRect(g, Color.BLUE, x, y);
+							//drawMatrixString(g, Color.WHITE, "~", x, y);
+							//drawMatrixRect(g, Color.BLACK, x, y);
 							continue;
 						}
 						if(sel1 == null){
