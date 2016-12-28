@@ -1,18 +1,16 @@
 package gui;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Rectangle;
+import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -39,7 +37,7 @@ class StrategoPanel extends JPanel implements Observer, MouseListener, MouseMoti
 	transient BufferedImage[] pieces_blu;
 	transient BufferedImage background;
 	
-	ValueFactory v = new ValueFactory();
+	ValueFactory valueFactory = new ValueFactory();
 	
 	int size = Math.min(this.getWidth(), this.getHeight());
 	int startX = (getWidth() - size)/2;
@@ -78,6 +76,8 @@ class StrategoPanel extends JPanel implements Observer, MouseListener, MouseMoti
 	public void update(Observable obs, Object arg) {
 		if(arg != null && arg instanceof Value)
 			model.val = (Value) arg;
+		sel1 = null;
+		sel2 = null;
 		this.repaint();
 	} 
 	
@@ -99,28 +99,42 @@ class StrategoPanel extends JPanel implements Observer, MouseListener, MouseMoti
 	    g.drawString(s, x + a, y + b);
 	}
 	
-	public void drawMatrixString(java.awt.Graphics g, Color c, String s, int x, int y) {
+	public void drawMatrixString(java.awt.Graphics2D g, Color c, String s, int x, int y) {
 		g.setColor(c);
 		centerString(g, s,  new Font("Arial", Font.PLAIN, size/15), squareSize, squareSize, startX + x*squareSize, startY + y*squareSize);
 	}
 	
-	public void fillMatrixRect(java.awt.Graphics g, Color c, int x, int y) {
+	public void fillMatrixRect(java.awt.Graphics2D g, Color c, int x, int y) {
 		g.setColor(c);
 		g.fillRect(startX + x*squareSize, startY + y*squareSize, squareSize, squareSize);
 	}
 	
-	public void drawMatrixRect(java.awt.Graphics g, Color c, int x, int y) {
+	public void drawMatrixRect(java.awt.Graphics2D g, Color c, int x, int y, int width) {
 		g.setColor(c);
+		g.setStroke(new BasicStroke(width));
 		g.drawRect(startX + x*squareSize, startY + y*squareSize, squareSize, squareSize);
 	}
 	
-	public void fillMatrixCircle(java.awt.Graphics g, Color c, int x, int y, double rad) {
+	public void drawMatrixRectRounded(java.awt.Graphics2D g, Color c, int x, int y, double radius, int width) {
+		g.setColor(c);
+		g.setStroke(new BasicStroke(width));
+		g.drawRoundRect(startX + x*squareSize, startY + y*squareSize, squareSize, squareSize, (int)(squareSize*radius), (int)(squareSize*radius));
+	}
+	
+	public void fillMatrixCircle(java.awt.Graphics2D g, Color c, int x, int y, double rad) {
 		g.setColor(c);
 		g.fillOval(startX + x*squareSize + (int)(squareSize*(1-rad)/2), startY + y*squareSize+ (int)(squareSize*(1-rad)/2), (int)(squareSize*rad), (int)(squareSize*rad));
 	}
 	
+	public void drawMatrixCircle(java.awt.Graphics2D g, Color c, int x, int y, double rad, int width) {
+		g.setColor(c);
+		g.setStroke(new BasicStroke(width));
+		g.drawOval(startX + x*squareSize + (int)(squareSize*(1-rad)/2), startY + y*squareSize+ (int)(squareSize*(1-rad)/2), (int)(squareSize*rad), (int)(squareSize*rad));
+	}
+	
 	public void paintComponent(java.awt.Graphics g) {
 		super.paintComponent(g);
+		Graphics2D g2 = (Graphics2D) g;
 		try {
 			size = Math.min(this.getWidth(), this.getHeight());
 			startX = (getWidth() - size)/2;
@@ -143,33 +157,39 @@ class StrategoPanel extends JPanel implements Observer, MouseListener, MouseMoti
 				for(int y = 0; y < 10; y++){
 					for(int x = 0; x < 10; x++){
 						if( (x+1 >= 3 && x+1 <= 4 && y+1 >= 5 && y+1 <= 6) ||(x+1 >= 7 && x+1 <= 8 && y+1 >= 5 && y+1 <= 6)){
-							
+							//System.out.print("~~  ");
 							//fillMatrixRect(g, Color.BLUE, x, y);
 							//drawMatrixString(g, Color.WHITE, "~", x, y);
 							//drawMatrixRect(g, Color.BLACK, x, y);
 							continue;
 						}
+						
+						RecordValue p = valueFactory.createRecord("Stratego`Point", new NaturalValue(x+1), new NaturalValue(y+1));
+						Value piece = board.get(p);
+						
 						if(sel1 == null){
 							if(isIn("src", x+1, y+1) != null){
-								fillMatrixCircle(g, Color.GREEN, x, y, 1);
-								fillMatrixCircle(g, Color.WHITE, x, y, .9);
+								drawMatrixRectRounded(g2, Color.GREEN, x, y, .1, 10);
 							}
 						} else {
 							if(sel1.fieldmap.get("x").nat1Value(null) == x+1 && sel1.fieldmap.get("y").nat1Value(null) == y+1){
-								fillMatrixCircle(g, Color.GREEN, x, y, 1);
-								fillMatrixCircle(g, Color.WHITE, x, y, .9);
+								drawMatrixRectRounded(g2, Color.GREEN, x, y, .1, 10);
 							} else if(isDst(x+1, y+1) != null){
-								fillMatrixCircle(g, Color.GREEN, x, y, 1);
-								fillMatrixCircle(g, Color.WHITE, x, y, .9);
+								if(sel2 == null || (sel2.fieldmap.get("x").nat1Value(null) == x+1 && sel2.fieldmap.get("y").nat1Value(null) == y+1)){
+									Color c;
+									if(piece != null)
+										c = Color.RED;
+									else c = Color.YELLOW;
+										drawMatrixRectRounded(g2, c, x, y, .1, 10);
+								}
 							}
 						}
 						
-						RecordValue p = v.createRecord("Stratego`Point", new NaturalValue(x+1), new NaturalValue(y+1));
-						Value piece = board.get(p);
 						
-						drawMatrixRect(g, Color.BLACK, x, y);
+						
+						drawMatrixRect(g2, Color.BLACK, x, y, 1);
 						if(piece == null){
-							System.out.print("--  ");
+							//System.out.print("--  ");
 							//drawMatrixRect(g, Color.GRAY, x, y);
 							//drawMatrixString(g, Color.BLACK, "x", x, y);
 						} else {
@@ -186,7 +206,7 @@ class StrategoPanel extends JPanel implements Observer, MouseListener, MouseMoti
 							
 							
 							String team = pieceRecord.fieldmap.get("team").toString().substring(1, 2).toLowerCase();
-							System.out.print(str + "" + team + "  ");
+							//System.out.print(str + "" + team + "  ");
 							Color c;
 							if(team.equals("r"))
 								c = Color.RED;
@@ -200,11 +220,11 @@ class StrategoPanel extends JPanel implements Observer, MouseListener, MouseMoti
 							//drawMatrixString(g, Color.WHITE, str, x, y);
 						}
 					}
-					System.out.println("\n");
+					//System.out.println("\n");
 				}
-				System.out.println("\n\n");
+				//System.out.println("\n\n");
 				//System.out.println(board);
-			} else System.out.println("is null");
+			} 
 		} catch (ValueException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -215,13 +235,12 @@ class StrategoPanel extends JPanel implements Observer, MouseListener, MouseMoti
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println(model.val);
+		//System.out.println(model.val);
 	}
 
 	@Override
 	public void mouseDragged(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-
+		mouseClicked(arg0);
 	}
 
 	@Override
@@ -258,15 +277,21 @@ class StrategoPanel extends JPanel implements Observer, MouseListener, MouseMoti
 		try {
 			if(model.val != null){
 				if(arg0.getX() >= startX/2 && arg0.getX() < getWidth() - startX /2 && arg0.getY() >= startY/2 && arg0.getY() < getHeight() - startY /2){
-					int x = (arg0.getX() - startX/2)/squareSize+1;
-					int y = (arg0.getY() - startY/2)/squareSize+1;
-					System.out.println("clicked " + x + ", " + y);
+					int x = (arg0.getX() - startX)/squareSize+1;
+					int y = (arg0.getY() - startY)/squareSize+1;
+					//System.out.println("clicked " + x + ", " + y);
 					if(sel2 != null){
-						System.out.println("Done");
-					} if (sel1 != null){
+						//System.out.println("Done");
+					} else if (sel1 != null){
 						RecordValue v = isDst(x,y);
 						if(v != null){
 							sel2 = v;
+							String str = "gr.sendData(StrategoOperations`getGameData(Stratego`executeMove(" + model.val.seqValue(null).get(0) + ")(" + 
+									valueFactory.createRecord("Stratego`Move", sel1, sel2)
+									+ ")))";
+							this.strategoCtrl.execute(str);
+							//this.strategoCtrl.execute("gr.board(\"hello\")");
+							//this.strategoCtrl.execute("gr.sendData([mk_Point(1,1)])");
 						} else {
 							v = isIn("src", x, y);
 							sel1 = v;

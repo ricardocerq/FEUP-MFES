@@ -18,17 +18,21 @@ public class StrategoControl {
 
 	public void init() {
 		try {
-			execute("create inst := let ini = StrategoState`defaultStartingInstance() in (StrategoState`setBoard(ini, StrategoState`fillBoardRandom(ini.ruleSet)))");
+			/*execute("create inst := let ini = StrategoState`defaultStartingInstance() in (StrategoState`setBoard(ini, StrategoState`fillBoardRandom(ini.ruleSet)))");
 			execute("create gui := new StrategoGUI()");
 			execute("gui.setInstance(inst)");
 			execute("gui.run()");
-			execute("gui.sendInstance()");
+			execute("gui.sendInstance()");*/
+			execute("create gr := new gui_Graphics()");
+			execute("gr.init()");
+			//execute("gr.sendData([1,2,3])");
+			execute("let inst = StrategoOperations`newRandomInstance() in gr.sendData(StrategoOperations`getGameData(inst))");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	private Value execute(String arguments) throws Exception {
+	public Value execute(String arguments) throws Exception {
 		String cmd = arguments;
 		if (cmd.toLowerCase().startsWith("create")) {
 			cmd = cmd.substring(cmd.indexOf(" "));
