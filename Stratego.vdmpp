@@ -69,7 +69,7 @@ class Stratego
 			post RESULT <> pl
 		;
 		
-		public inInterval: nat * nat -> nat1 -> bool
+		public inInterval: int * int -> int -> bool
 			inInterval(a,b)(val) ==
 				Utils`applyToMinAndMax[bool]
 				(lambda min: real, max: real & val > min and val < max)
@@ -77,25 +77,24 @@ class Stratego
 				(b)
 		;
 		
-		public validDim: nat1 -> bool 
+		public validDim: int -> bool 
 			validDim(v) ==
 				inInterval(0, StrategoRules`boardSize+1)(v)
 		;
 		
-		public intervalSet: nat*nat -> set of nat1
-			intervalSet(a,b) ==	
-				Utils`applyToMinAndMax[set of nat1]
+		public intervalSet: int->int -> set of int
+			intervalSet(a)(b) ==	
+				Utils`applyToMinAndMax[set of int]
 				(lambda min: real, max: real & {min+1, ..., max-1})
 				(a)
 				(b)
 			
-			pre a >= 0 and b >= 0
 			post forall e in set RESULT & inInterval(a, b)(e)
 		;
 		
-		public validDimSet: () -> set of nat1
+		public validDimSet: () -> set of int
 			validDimSet() ==
-				intervalSet(0, StrategoRules`boardSize+1)
+				intervalSet(0)(StrategoRules`boardSize+1)
 		;
 		
 		public validPoint: Point -> bool 
@@ -111,26 +110,26 @@ class Stratego
 			post validPoint(p) and p.x = RESULT.x and p.y = StrategoRules`boardSize - RESULT.y + 1
 		;
 		
-		public pointsInRanges: set of nat1 * set of nat1 -> set of Point
-			pointsInRanges(xrange, yrange) ==
-				{ mk_Point(x,y) | x in set xrange , y in set yrange }
+		public pointsInRanges: set of int -> set of int -> set of Point
+			pointsInRanges(xrange)(yrange) ==
+				{ mk_Point(x,y) | x in set xrange , y in set yrange  &  validDim(x) and validDim(y)}
 			
 			post forall a in set RESULT & validPoint(a)
 		;
 		
 		public allPoints: () -> set of Point
 			allPoints() ==
-				pointsInRanges(validDimSet(),validDimSet())
+				pointsInRanges(validDimSet())(validDimSet())
 		;
 		
-		public pointsFiltered: (() -> set of Point) -> (Point->bool) -> set of Point
+		public pointsFiltered: set of Point -> (Point->bool) -> set of Point
 			 pointsFiltered(gen)(f)==
-			 	Utils`filterSet[Point](f)(gen())
+			 	Utils`filterSet[Point](f)(gen)
 		;
 		
 		public allPointsFiltered: (Point->bool) -> set of Point
 			 allPointsFiltered(f)==
-			 	pointsFiltered(allPoints)(f)
+			 	pointsFiltered(allPoints())(f)
 		;
 		
 		public isInBackRowBlu: Point -> bool
@@ -191,11 +190,21 @@ class Stratego
 				let align = alignment(src)(dst)
 						in (
 						if(align.#1)
-							then pointsInRanges({src.x}, intervalSet(src.y, dst.y))
-							else pointsInRanges(intervalSet(src.x, dst.x), {src.y})
+							then pointsInRanges({src.x})(intervalSet(src.y)( dst.y))
+							else pointsInRanges(intervalSet(src.x)( dst.x))({src.y})
 				)
 			
 			pre aligned(src)(dst)
+		;
+		public getPointsInRange: nat -> Point -> set of Point
+			getPointsInRange(range)(point) ==
+			pointsFiltered(
+				let range1 = range + 1 in (
+					pointsInRanges({point.x})(intervalSet(point.y-range1)(point.y+range1)) union
+					pointsInRanges(intervalSet(point.x-range1)(point.x+range1))({point.y})
+				)												
+			)
+			(lambda p: Point & p <> point and validPoint(p))
 		;
 		
 		public toPiece:  Team -> Character -> Piece
@@ -258,5 +267,19 @@ class Stratego
 			pre isValidMove(inst)(m)
 		; 
 		
+		public possibleMoves: StrategoState`Instance -> set of Move
+			possibleMoves(inst) ==
+				dunion 
+					Utils`mapFunctionSet[Point, set of Move]
+					(possibleMovesFromPoint(inst))
+					({point | point in set dom inst.board & inst.board(point).team = inst.currentTeam})
+		;
+		
+		public possibleMovesFromPoint: StrategoState`Instance -> Point -> set of Move
+			possibleMovesFromPoint(inst)(p) ==
+				{mk_Move(p, dst) | dst in set getPointsInRange(StrategoRules`getMovementRange(inst.ruleSet)(inst.board(p).character))(p) & isValidMove(inst)(mk_Move(p, dst))}
+				
+				pre p in set dom inst.board
+		;
 end Stratego
 

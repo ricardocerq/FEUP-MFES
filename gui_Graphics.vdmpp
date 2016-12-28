@@ -26,4 +26,9 @@ class gui_Graphics
 				is not yet specified
 		;
 		
+		public send: seq of ? ==> ()
+			send(list) == 
+				is not yet specified
+		;
+		
 end gui_Graphics
