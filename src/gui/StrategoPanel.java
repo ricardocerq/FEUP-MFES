@@ -46,6 +46,8 @@ class StrategoPanel extends JPanel implements Observer, MouseListener, MouseMoti
 	
 	RecordValue sel1;
 	RecordValue sel2;
+	int hoverX = -1;
+	int hoverY = -1;
 	
 	StrategoPanel(Model model, StrategoControl strategoCtrl) throws IOException {
 		super();
@@ -115,10 +117,10 @@ class StrategoPanel extends JPanel implements Observer, MouseListener, MouseMoti
 		g.drawRect(startX + x*squareSize, startY + y*squareSize, squareSize, squareSize);
 	}
 	
-	public void drawMatrixRectRounded(java.awt.Graphics2D g, Color c, int x, int y, double radius, int width) {
+	public void drawMatrixRectRounded(java.awt.Graphics2D g, Color c, int x, int y, double radius, int width, double rad) {
 		g.setColor(c);
 		g.setStroke(new BasicStroke(width));
-		g.drawRoundRect(startX + x*squareSize, startY + y*squareSize, squareSize, squareSize, (int)(squareSize*radius), (int)(squareSize*radius));
+		g.drawRoundRect(startX + x*squareSize + (int)(squareSize*(1-rad)/2), startY + y*squareSize+ (int)(squareSize*(1-rad)/2), (int)(squareSize*rad), (int)(squareSize*rad), (int)(squareSize*radius), (int)(squareSize*radius));
 	}
 	
 	public void fillMatrixCircle(java.awt.Graphics2D g, Color c, int x, int y, double rad) {
@@ -153,7 +155,14 @@ class StrategoPanel extends JPanel implements Observer, MouseListener, MouseMoti
 				ValueList strengths = instance.fieldmap.get("ruleSet").recordValue(null).fieldmap.get("characterStrengths").seqValue(null);
 				
 				g.drawImage(background, startX, startY, 10 * squareSize, 10 * squareSize, null);
-				
+				for(int y = 0; y < 10; y++){
+					for(int x = 0; x < 10; x++){
+						if( (x+1 >= 3 && x+1 <= 4 && y+1 >= 5 && y+1 <= 6) ||(x+1 >= 7 && x+1 <= 8 && y+1 >= 5 && y+1 <= 6)){
+							continue;
+						}
+						drawMatrixRect(g2, Color.BLACK, x, y, 1);
+					}
+				}
 				for(int y = 0; y < 10; y++){
 					for(int x = 0; x < 10; x++){
 						if( (x+1 >= 3 && x+1 <= 4 && y+1 >= 5 && y+1 <= 6) ||(x+1 >= 7 && x+1 <= 8 && y+1 >= 5 && y+1 <= 6)){
@@ -169,25 +178,25 @@ class StrategoPanel extends JPanel implements Observer, MouseListener, MouseMoti
 						
 						if(sel1 == null){
 							if(isIn("src", x+1, y+1) != null){
-								drawMatrixRectRounded(g2, Color.GREEN, x, y, .1, 10);
+								drawMatrixRectRounded(g2, Color.GREEN, x, y, .1, 5, .9);
 							}
 						} else {
 							if(sel1.fieldmap.get("x").nat1Value(null) == x+1 && sel1.fieldmap.get("y").nat1Value(null) == y+1){
-								drawMatrixRectRounded(g2, Color.GREEN, x, y, .1, 10);
+								drawMatrixRectRounded(g2, Color.GREEN, x, y, .1, 5, .9);
 							} else if(isDst(x+1, y+1) != null){
 								if(sel2 == null || (sel2.fieldmap.get("x").nat1Value(null) == x+1 && sel2.fieldmap.get("y").nat1Value(null) == y+1)){
 									Color c;
 									if(piece != null)
 										c = Color.RED;
 									else c = Color.YELLOW;
-										drawMatrixRectRounded(g2, c, x, y, .1, 10);
+										drawMatrixRectRounded(g2, c, x, y, .1, 5, .9);
 								}
 							}
 						}
 						
 						
 						
-						drawMatrixRect(g2, Color.BLACK, x, y, 1);
+						
 						if(piece == null){
 							//System.out.print("--  ");
 							//drawMatrixRect(g, Color.GRAY, x, y);
@@ -222,6 +231,9 @@ class StrategoPanel extends JPanel implements Observer, MouseListener, MouseMoti
 					}
 					//System.out.println("\n");
 				}
+				if(hoverX != -1){
+					drawMatrixRectRounded(g2, Color.CYAN, hoverX-1, hoverY-1, .1, 5, .9);
+				}
 				//System.out.println("\n\n");
 				//System.out.println(board);
 			} 
@@ -245,8 +257,19 @@ class StrategoPanel extends JPanel implements Observer, MouseListener, MouseMoti
 
 	@Override
 	public void mouseMoved(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-
+		int prevX = hoverX;
+		int prevY = hoverY;
+		if(arg0.getX() >= startX/2 && arg0.getX() < getWidth() - startX && arg0.getY() >= startY/2 && arg0.getY() < getHeight() - startY){
+			int x = (arg0.getX() - startX)/squareSize+1;
+			int y = (arg0.getY() - startY)/squareSize+1;
+			hoverX = x;
+			hoverY = y;
+		} else {
+			hoverX = -1;
+			hoverY = -1;
+		}
+		if(prevX != hoverX || prevY != hoverY)
+			repaint();
 	}
 	
 	public RecordValue isIn(String srcDst, int x, int y) throws ValueException{
@@ -276,9 +299,11 @@ class StrategoPanel extends JPanel implements Observer, MouseListener, MouseMoti
 		this.repaint();
 		try {
 			if(model.val != null){
-				if(arg0.getX() >= startX/2 && arg0.getX() < getWidth() - startX /2 && arg0.getY() >= startY/2 && arg0.getY() < getHeight() - startY /2){
+				if(arg0.getX() >= startX/2 && arg0.getX() < getWidth() - startX && arg0.getY() >= startY/2 && arg0.getY() < getHeight() - startY){
 					int x = (arg0.getX() - startX)/squareSize+1;
 					int y = (arg0.getY() - startY)/squareSize+1;
+					hoverX = x;
+					hoverY = y;
 					//System.out.println("clicked " + x + ", " + y);
 					if(sel2 != null){
 						//System.out.println("Done");
