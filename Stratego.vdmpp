@@ -22,7 +22,7 @@ class Stratego
 		| <Major>
 		| <Colonel> 
 		| <General> 
-		| <Marshal>;
+		| <Marshall>;
 											 
 		public Team = 
 			<Red>
@@ -49,8 +49,8 @@ class Stratego
 			alignment(p1)(p2) ==
 				mk_(p1.x = p2.x, p1.y = p2.y)
 			
-			post RESULT.#1 = true <=> p1.x = p2.x and 
-					 RESULT.#2 = true <=> p1.y = p2.y 					 
+			post (RESULT.#1 <=> (p1.x = p2.x)) and 
+					 (RESULT.#2 <=> (p1.y = p2.y)) 					 
 		;
 		
 		public aligned: Point->Point->bool

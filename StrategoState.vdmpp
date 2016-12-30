@@ -17,7 +17,7 @@ class StrategoState
 			inv mk_Instance(ruleSet,t,pl,board) == 
 				forall team in set dom pl & pl(team).team = team and 
 				card dom pl = 2 and
-				len pl(t).plays <= len pl(Stratego`getOpponent(t)).plays and
+				--len pl(t).plays <= len pl(Stratego`getOpponent(t)).plays and
 				let captureGetter = getCaptures(ruleSet)(board),
 						pieceGetter = StrategoRules`getAllPieces(ruleSet) in (
 					--Utils`sameElems[Stratego`Piece]
@@ -28,6 +28,7 @@ class StrategoState
 		;
 		
 	functions
+	
 		public defaultStartingInstance: () -> Instance
 			defaultStartingInstance() ==
 				let ruleset = StrategoRules`getDefaultRuleSet() in (
@@ -88,6 +89,7 @@ class StrategoState
 											then boardNoSrc ++ {m.dst |-> srcPiece} -- replace piece at dst with src piece
 											else {m.dst} <-: boardNoSrc -- remove both
 				)
+				
 			pre not (keepSrc and keepDst) and StrategoState`pieceAt(board)(m.src) <> nil
 			post StrategoState`pieceAt(RESULT)(m.src) = nil and 
 					 let srcPiece = StrategoState`pieceAt(board)(m.src),
@@ -133,6 +135,11 @@ class StrategoState
 				Utils`diff[Stratego`Piece](StrategoRules`getAllPieces(ruleSet)(team))(getPieces(board)(team))
 		;
 		
+		public getCaptures: StrategoState`Instance -> Stratego`Team -> seq of Stratego`Piece
+			getCaptures(inst)(team) ==
+				getCaptures(inst.ruleSet)(inst.board)(team)
+		;
+		
 		public repeatedMove: Player -> Stratego`Move -> bool
 				repeatedMove(player)(m) == 
 					let plays = player.plays in (
@@ -146,7 +153,18 @@ class StrategoState
 							secondToLastPlay.dst = m.dst
 					)
 				)
-			;
+				post RESULT <=> 
+						 let plays = player.plays in (
+								len plays >= 2 and
+								let lastPlay = plays(len plays),
+										secondToLastPlay = plays(len plays-1) in (
+									lastPlay.src = m.dst and 
+									lastPlay.dst = m.src and 
+									secondToLastPlay.src = m.src and 
+									secondToLastPlay.dst = m.dst
+								)
+						)
+		;
 		
 		public fillBoard: StrategoRules`RuleSet -> Utils`Ordering -> Utils`Ordering -> Board
 			fillBoard(ruleSet)(ordersBlu)(ordersRed) == (
@@ -175,6 +193,12 @@ class StrategoState
 				
 			post RESULT <=> (mk_Stratego`Piece(<Flag>, <Red>) not in set rng inst.board or mk_Stratego`Piece(<Flag>, <Blu>) not in set rng inst.board)
 		;
+		
+		public skipTurn: Instance -> Instance
+			skipTurn(inst) ==
+				mk_Instance(inst.ruleSet, Stratego`getOpponent(inst.currentTeam), inst.players, inst.board)
+		;
+		
 	operations
 	
 		public static fillBoardRandom: StrategoRules`RuleSet ==> [Board]

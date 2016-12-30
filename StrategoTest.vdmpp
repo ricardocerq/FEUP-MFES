@@ -16,8 +16,9 @@ class StrategoTest is subclass of TestCase
 		);
 		
 		public test1() == (
-			dcl rules: StrategoRules`RuleSet := StrategoRules`getDefaultRuleSet();
-			dcl positions: set of Stratego`Point := Stratego`allPoints();
+			dcl rules: StrategoRules`RuleSet := StrategoRules`getDefaultRuleSet(),
+			positions: set of Stratego`Point := Stratego`allPoints()
+			;
 			
 			dcl bluArea: set of Stratego`Point := Stratego`allPointsFiltered(Stratego`isInTeamArea(<Blu>));
 			dcl redArea: set of Stratego`Point := Stratego`allPointsFiltered(Stratego`isInTeamArea(<Red>));
@@ -35,9 +36,96 @@ class StrategoTest is subclass of TestCase
 		);
 		
 		public test2() == (
-			dcl inst: StrategoState`Instance := StrategoState`defaultStartingInstance();
-			inst := StrategoState`setBoard(inst, StrategoState`fillBoardRandom(inst.ruleSet));
+			dcl inst: StrategoState`Instance := StrategoOperations`newRandomInstance();
 			StrategoOperations`printBoard(inst);
+			Assert`assertTrue("Game should not be over", StrategoState`gameOver(inst) = false);
+			Assert`assertTrue("Blu should have all pieces expected \n{}\nwas\n{}", Utils`sameElems[Stratego`Piece](StrategoState`getPieces(inst.board)(<Blu>))(StrategoRules`getAllPieces(inst.ruleSet)(<Blu>)));
+			Assert`assertTrue("Red should have all pieces", Utils`sameElems[Stratego`Piece](StrategoState`getPieces(inst.board)(<Red>))(StrategoRules`getAllPieces(inst.ruleSet)(<Red>)));
+			Assert`assertTrue("Blu captures should be empty", StrategoState`getCaptures(inst)(<Blu>) = []);
+			Assert`assertTrue("Red captures should be empty", StrategoState`getCaptures(inst)(<Red>) = []);
+		);
+		
+		private movementTest: Stratego`Character * Stratego`Point * set of Stratego`Move ==> ()
+			movementTest(character, srcPoint, expected) == (
+				dcl original: StrategoState`Instance := StrategoState`defaultStartingInstance(),
+						piece: Stratego`Piece := mk_Stratego`Piece(character, <Blu>),
+						inst: StrategoState`Instance := StrategoState`placePiece(original)(piece)(srcPoint);
+						
+				Assert`assertTrue("Piece was not placed correctly", StrategoState`pieceAt(inst.board)(srcPoint) = piece);
+				Assert`assertTrue(Utils`sprintf("Moves were different than expected, was: {}", [Stratego`possibleMoves(inst)]), expected = Stratego`possibleMoves(inst));
+				
+				for y = 1 to 10 do (
+					for x = 1 to 10 do (
+						Assert`assertTrue("Incorrect move validation", Stratego`isValidMove(inst)(mk_Stratego`Move(srcPoint, mk_Stratego`Point(x,y))) <=> mk_Stratego`Move(srcPoint, mk_Stratego`Point(x,y)) in set expected);
+					);
+				);
+		);
+		
+		public test3() == (
+			dcl normalMoveSet: set of Stratego`Move := {mk_Stratego`Move(mk_Stratego`Point(2, 2), mk_Stratego`Point(1, 2)), mk_Stratego`Move(mk_Stratego`Point(2, 2), mk_Stratego`Point(2, 1)), mk_Stratego`Move(mk_Stratego`Point(2, 2), mk_Stratego`Point(2, 3)), mk_Stratego`Move(mk_Stratego`Point(2, 2), mk_Stratego`Point(3, 2))};
+			movementTest(<Scout>, mk_Stratego`Point(2,2), {mk_Stratego`Move(mk_Stratego`Point(2, 2), mk_Stratego`Point(1, 2)), mk_Stratego`Move(mk_Stratego`Point(2, 2), mk_Stratego`Point(2, 1)), mk_Stratego`Move(mk_Stratego`Point(2, 2), mk_Stratego`Point(2, 3)), mk_Stratego`Move(mk_Stratego`Point(2, 2), mk_Stratego`Point(2, 4)), mk_Stratego`Move(mk_Stratego`Point(2, 2), mk_Stratego`Point(2, 5)), mk_Stratego`Move(mk_Stratego`Point(2, 2), mk_Stratego`Point(2, 6)), mk_Stratego`Move(mk_Stratego`Point(2, 2), mk_Stratego`Point(2, 7)), mk_Stratego`Move(mk_Stratego`Point(2, 2), mk_Stratego`Point(2, 8)), mk_Stratego`Move(mk_Stratego`Point(2, 2), mk_Stratego`Point(2, 9)), mk_Stratego`Move(mk_Stratego`Point(2, 2), mk_Stratego`Point(2, 10)), mk_Stratego`Move(mk_Stratego`Point(2, 2), mk_Stratego`Point(3, 2)), mk_Stratego`Move(mk_Stratego`Point(2, 2), mk_Stratego`Point(4, 2)), mk_Stratego`Move(mk_Stratego`Point(2, 2), mk_Stratego`Point(5, 2)), mk_Stratego`Move(mk_Stratego`Point(2, 2), mk_Stratego`Point(6, 2)), mk_Stratego`Move(mk_Stratego`Point(2, 2), mk_Stratego`Point(7, 2)), mk_Stratego`Move(mk_Stratego`Point(2, 2), mk_Stratego`Point(8, 2)), mk_Stratego`Move(mk_Stratego`Point(2, 2), mk_Stratego`Point(9, 2)), mk_Stratego`Move(mk_Stratego`Point(2, 2), mk_Stratego`Point(10, 2))});
+			movementTest(<Flag>, mk_Stratego`Point(2,2), {});
+			movementTest(<Bomb>, mk_Stratego`Point(2,2), {});
+			movementTest(<Spy>, mk_Stratego`Point(2,2), normalMoveSet);
+			movementTest(<Miner>, mk_Stratego`Point(2,2), normalMoveSet);
+			movementTest(<Sergeant>, mk_Stratego`Point(2,2), normalMoveSet);
+			movementTest(<Lieutenant>, mk_Stratego`Point(2,2), normalMoveSet);
+			movementTest(<Captain>, mk_Stratego`Point(2,2), normalMoveSet);
+			movementTest(<Major>, mk_Stratego`Point(2,2), normalMoveSet);
+			movementTest(<Colonel>, mk_Stratego`Point(2,2), normalMoveSet);
+			movementTest(<General>, mk_Stratego`Point(2,2), normalMoveSet);
+			movementTest(<Marshall>, mk_Stratego`Point(2,2), normalMoveSet);
+		);
+		
+		public test4() == (
+			dcl original: StrategoState`Instance := StrategoState`defaultStartingInstance(),
+						piece: Stratego`Piece := mk_Stratego`Piece(<Spy>, <Blu>),
+						point1: Stratego`Point := mk_Stratego`Point(2,2),
+						point2: Stratego`Point := mk_Stratego`Point(2,3),
+						move1: Stratego`Move := mk_Stratego`Move(point1, point2),
+						move2: Stratego`Move := mk_Stratego`Move(point2, point1),
+						inst: StrategoState`Instance := StrategoState`placePiece(original)(piece)(point1),
+						inst2: StrategoState`Instance := StrategoState`skipTurn(Stratego`executeMove(inst)(move1)),
+						inst3: StrategoState`Instance := StrategoState`skipTurn(Stratego`executeMove(inst2)(move2))
+			;
+			Assert`assertTrue("Move should be invalid", Stratego`isValidMove(inst3)(move1) = false);
+			Assert`assertTrue("Move should be repeated", StrategoState`repeatedMove(inst3.players(<Blu>))(move1));
+		);
+		
+		public attackTest: bool ==> ()
+			attackTest(agressorAdvantage) == (
+				dcl 	chars: set of Stratego`Character := {<Flag>, <Bomb>, <Spy>, <Scout>, <Miner>, <Sergeant>, <Lieutenant>, <Captain>, <Major>, <Colonel>, <General>, <Marshall>},
+							default: StrategoState`Instance := StrategoState`defaultStartingInstance(),
+							original: StrategoState`Instance := mk_StrategoState`Instance( 
+																											mk_StrategoRules`RuleSet(default.ruleSet.maxRescuesPerPlayer,
+																											agressorAdvantage,
+																											default.ruleSet.silentDefense,
+																											default.ruleSet.multiplicities,
+																											default.ruleSet.characterStrengths,
+																											default.ruleSet.specialMovementRanges,
+																											default.ruleSet.specialStrengths,
+																											default.ruleSet.cannotRescue,
+																											default.ruleSet.cannotBeRescued
+																									 ), default.currentTeam, default.players, default.board), 
+							point1: Stratego`Point := mk_Stratego`Point(2,2),
+							point2: Stratego`Point := mk_Stratego`Point(3,2),
+							move1: Stratego`Move := mk_Stratego`Move(point1, point2)
+				;
+				for all srcChar in set chars \ {<Flag>, <Bomb>} do (
+					for all dstChar in set chars do (
+						dcl pieceSrc: Stratego`Piece := mk_Stratego`Piece(srcChar, <Blu>),
+								pieceDst: Stratego`Piece := mk_Stratego`Piece(dstChar, <Red>),
+								str1: nat1 := StrategoRules`getStrength(original.ruleSet)(srcChar),
+								str2: nat1 := StrategoRules`getStrength(original.ruleSet)(dstChar),
+								inst: StrategoState`Instance := StrategoState`placePiece(StrategoState`placePiece(original)(pieceSrc)(point1))(pieceDst)(point2),
+								inst2: StrategoState`Instance := Stratego`executeMove(inst)(move1),
+								resPiece: [Stratego`Piece] := StrategoState`pieceAt(isnt2.board)(point2)
+						;
+						Assert`assertTrue("", 
+							((str1 = str2) => (resPiece = nil))
+						);
+					);
+				);
 		);
 		
 		public static main() ==

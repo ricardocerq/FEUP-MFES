@@ -201,14 +201,6 @@ class Utils
 						 (a < b => RESULT = f(a,b))
 		;
 		
-		-------------------------------------------------------------------------------------------------------------
-		
-		public dup: nat -> (nat*nat)
-			dup(d) ==
-				mk_(d,d)
-				
-			post RESULT.#1 = d and RESULT.#2 = d
-		;
 		
 		-------------------------------------------------------------------------------------------------------------
 		
@@ -249,7 +241,7 @@ class Utils
 		
 		public indexOf[@T]: seq of @T ->  @T -> nat1
 			indexOf(list)(e) ==
-				iota n in set inds list & list(n) = e and forall ix in set inds list & list(ix) = e => n <= ix
+				[i | i in set inds list & list(i) = e](1)
 			
 			pre e in set elems list
 			post list(RESULT) = e

@@ -60,7 +60,7 @@ class StrategoRules
 							<Major> |-> 3 ,
 							<Colonel> |-> 2 ,
 							<General> |-> 1 ,
-							<Marshal> |-> 1 
+							<Marshall> |-> 1 
 						}, 
 						[
 							<Flag>,
@@ -73,7 +73,7 @@ class StrategoRules
 							<Major>,
 							<Colonel>,
 							<General>,
-							<Marshal>,
+							<Marshall>,
 							<Bomb>
 						], 
 						{
@@ -82,7 +82,7 @@ class StrategoRules
 							<Scout> |-> boardSize
 						}, 
 						{
-							<Spy> |-> <Marshal>,
+							<Spy> |-> <Marshall>,
 							<Miner> |-> <Bomb>
 						}, 
 						{
@@ -94,7 +94,7 @@ class StrategoRules
 					)
 			;
 		
-			public getStrength: RuleSet->Stratego`Character-> nat
+			public getStrength: RuleSet -> Stratego`Character -> nat
 				getStrength(ruleset)(character) ==
 					Utils`indexOf[Stratego`Character](ruleset.characterStrengths)(character)
 			;
