@@ -31,7 +31,7 @@ class StrategoRules
 			
 			inv mk_RuleSet(-,-,-,m,-,smr,-,-,-) == 
 					Utils`reduceMap[?, nat, nat]
-					((lambda acc: nat, -: ?, n: nat & acc + n))
+					(lambda acc: nat, -: ?, n: nat & acc + n)
 					(0)
 					(m)
 						= boardSize * boardSize * sideProportion

@@ -119,10 +119,11 @@ class StrategoTest is subclass of TestCase
 								str2: nat1 := StrategoRules`getStrength(original.ruleSet)(dstChar),
 								inst: StrategoState`Instance := StrategoState`placePiece(StrategoState`placePiece(original)(pieceSrc)(point1))(pieceDst)(point2),
 								inst2: StrategoState`Instance := Stratego`executeMove(inst)(move1),
-								resPiece: [Stratego`Piece] := StrategoState`pieceAt(isnt2.board)(point2)
+								resPiece: [Stratego`Piece] := StrategoState`pieceAt(inst2.board)(point2)
 						;
+						
 						Assert`assertTrue("", 
-							((str1 = str2) => (resPiece = nil))
+							((str1 = str2) => (agressorAdvantage => resPiece = nil))
 						);
 					);
 				);
