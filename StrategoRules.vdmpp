@@ -30,8 +30,8 @@ class StrategoRules
 			cannotBeRescued: set of Stratego`Character
 			
 			inv mk_RuleSet(-,-,-,m,-,smr,-,-,-) == 
-					Utils`reduceMap[?, nat, nat]
-					(lambda acc: nat, -: ?, n: nat & acc + n)
+					Utils`reduceMap[Stratego`Character, nat, nat]
+					(lambda acc: nat, c: Stratego`Character, n: nat & acc + n)
 					(0)
 					(m)
 						= boardSize * boardSize * sideProportion
@@ -129,6 +129,14 @@ class StrategoRules
 				
 				post (forall el in seq RESULT & el.team = team) and
 							Stratego`toCharacters(RESULT) = getAllCharacters(ruleSet)
+			;
+			
+			public stronger: RuleSet -> Stratego`Character -> Stratego`Character -> bool 
+				stronger(ruleSet)(c1)(c2) ==
+					if(c1 in set dom ruleSet.specialStrengths and ruleSet.specialStrengths(c1) = c2) then
+						true
+					else getStrength(ruleSet)(c1) > getStrength(ruleSet)(c2)
+				pre c1 <> c2 
 			;
 			
 			public resolveAttack: RuleSet -> Stratego`Piece -> [Stratego`Piece] -> (bool*bool)

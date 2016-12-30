@@ -81,13 +81,14 @@ class StrategoState
 		public addMoveBoard: Board -> Stratego`Move -> (bool*bool) -> Board 
 			addMoveBoard(board)(m)(mk_(keepSrc,keepDst)) ==
 				let srcPiece = StrategoState`pieceAt(board)(m.src),
-						boardNoSrc = ({m.src} <-: board)
-						in (
-						if keepDst
-							then boardNoSrc -- only remove src
-							else if keepSrc
-											then boardNoSrc ++ {m.dst |-> srcPiece} -- replace piece at dst with src piece
-											else {m.dst} <-: boardNoSrc -- remove both
+						boardNoSrc = ({m.src} <-: board) in (
+						
+							if (keepDst)
+								then boardNoSrc 																		-- only remove src
+								else if (keepSrc)
+												then boardNoSrc ++ {m.dst |-> srcPiece} 		-- replace piece at dst with src piece
+												else {m.dst} <-: boardNoSrc 								-- remove both
+												
 				)
 				
 			pre not (keepSrc and keepDst) and StrategoState`pieceAt(board)(m.src) <> nil
@@ -183,8 +184,6 @@ class StrategoState
 			pre len ordersBlu = StrategoRules`getNumberOfCharacters() and len ordersRed = StrategoRules`getNumberOfCharacters()
 		;
 		
-		--public fillBoard: Strate
-		
 		public gameOver: Instance -> bool
 			gameOver(inst) ==
 				let f = lambda t: Stratego`Team & mk_Stratego`Piece(<Flag>, t) not in set rng inst.board in (
@@ -206,7 +205,6 @@ class StrategoState
 				let num = StrategoRules`getNumberOfCharacters(),
 						bluOrder = Utils`randomOrdering(num),
 						redOrder = Utils`randomOrdering(num) in (
-					--Utils`printf("{}\n{}", [bluOrder, redOrder]);
 					return fillBoard(ruleSet)(bluOrder)(redOrder);
 				)
 			)

@@ -121,14 +121,40 @@ class StrategoTest is subclass of TestCase
 								inst2: StrategoState`Instance := Stratego`executeMove(inst)(move1),
 								resPiece: [Stratego`Piece] := StrategoState`pieceAt(inst2.board)(point2)
 						;
+
+						if(str1 = str2) then (
 						
-						Assert`assertTrue("", 
-							((str1 = str2) => (agressorAdvantage => resPiece = nil))
-						);
+							if(agressorAdvantage) then (
+							
+								Assert`assertTrue("Wrong result", resPiece = pieceSrc);
+								
+							) else (
+							
+								Assert`assertTrue("Wrong result", resPiece = nil);
+								
+							)
+							
+						) else (
+						
+							if(StrategoRules`stronger(original.ruleSet)(srcChar)(dstChar)) then (
+							
+								Assert`assertTrue("Wrong result", resPiece = pieceSrc);
+							
+							) else (
+							
+								Assert`assertTrue("Wrong result", resPiece = pieceDst);
+							
+							)
+							
+						)
+						
 					);
 				);
 		);
-		
+		public test5() == (
+			attackTest(false);
+			attackTest(true);
+		);
 		public static main() ==
 			new StrategoTest().test1()
 		;
