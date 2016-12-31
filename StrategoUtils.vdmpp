@@ -1,4 +1,4 @@
-class Utils
+class StrategoUtils
 	functions
 	
 		private reduceSeqMeasure[@T, @R]: (@R * @T -> @R) * @R * seq of @T +> nat
@@ -372,4 +372,4 @@ class Utils
 				isOrdering(list)
 		;
 
-end Utils
+end StrategoUtils

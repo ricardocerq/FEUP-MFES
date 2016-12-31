@@ -71,7 +71,7 @@ class Stratego
 		
 		public inInterval: int * int -> int -> bool
 			inInterval(a,b)(val) ==
-				Utils`applyToMinAndMax[bool]
+				StrategoUtils`applyToMinAndMax[bool]
 				(lambda min: real, max: real & val > min and val < max)
 				(a)
 				(b)
@@ -84,7 +84,7 @@ class Stratego
 		
 		public intervalSet: int->int -> set of int
 			intervalSet(a)(b) ==	
-				Utils`applyToMinAndMax[set of int]
+				StrategoUtils`applyToMinAndMax[set of int]
 				(lambda min: real, max: real & {min+1, ..., max-1})
 				(a)
 				(b)
@@ -124,7 +124,7 @@ class Stratego
 		
 		public pointsFiltered: set of Point -> (Point->bool) -> set of Point
 			 pointsFiltered(gen)(f)==
-			 	Utils`filterSet[Point](f)(gen)
+			 	StrategoUtils`filterSet[Point](f)(gen)
 		;
 		
 		public allPointsFiltered: (Point->bool) -> set of Point
@@ -214,12 +214,12 @@ class Stratego
 		
 		public toPieces: seq of Character-> Team -> seq of Piece
 			toPieces(characters)(team) ==
-				Utils`mapFunctionSeq[Stratego`Character, Stratego`Piece](toPiece(team))(characters)
+				StrategoUtils`mapFunctionSeq[Stratego`Character, Stratego`Piece](toPiece(team))(characters)
 		;
 		
 		public toCharacters: seq of Piece -> seq of Character
 			toCharacters(pieces) ==
-				Utils`mapFunctionSeq[Stratego`Piece, Stratego`Character](lambda p: Piece & p.character)(pieces)
+				StrategoUtils`mapFunctionSeq[Stratego`Piece, Stratego`Character](lambda p: Piece & p.character)(pieces)
 		;
 		
 		public isValidMove: StrategoState`Instance -> Move -> bool
@@ -232,8 +232,8 @@ class Stratego
 						dstPiece = StrategoState`pieceAt(inst.board)(m.dst),
 						ruleset = inst.ruleSet,
 						pointsInBetween = pointsBetween(m.src)(m.dst),
-						anyLakesInBetween = Utils`reduceSet[Stratego`Point, bool](lambda b: bool, p: Stratego`Point & b or isLake(p))(false)(pointsInBetween),
-						piecesInBetween = Utils`mapFunctionSet[Point, [Piece]](StrategoState`pieceAt(inst.board))(pointsInBetween)
+						anyLakesInBetween = StrategoUtils`reduceSet[Stratego`Point, bool](lambda b: bool, p: Stratego`Point & b or isLake(p))(false)(pointsInBetween),
+						piecesInBetween = StrategoUtils`mapFunctionSet[Point, [Piece]](StrategoState`pieceAt(inst.board))(pointsInBetween)
 						in (
 						not anyLakesInBetween and
 						srcPiece <> nil and
@@ -270,7 +270,7 @@ class Stratego
 		public possibleMoves: StrategoState`Instance -> set of Move
 			possibleMoves(inst) ==
 				dunion 
-					Utils`mapFunctionSet[Point, set of Move]
+					StrategoUtils`mapFunctionSet[Point, set of Move]
 					(possibleMovesFromPoint(inst))
 					({point | point in set dom inst.board & inst.board(point).team = inst.currentTeam})
 		;

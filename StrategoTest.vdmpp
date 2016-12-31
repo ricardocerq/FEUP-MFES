@@ -1,7 +1,7 @@
 class StrategoTest is subclass of TestCase
 	functions
 		private symmetricAreas(a, b: set of Stratego`Point) res: bool ==
-			Utils`mapFunctionSet[Stratego`Point,Stratego`Point](Stratego`invertedPoint)(a) = b
+			StrategoUtils`mapFunctionSet[Stratego`Point,Stratego`Point](Stratego`invertedPoint)(a) = b
 		;
 	operations
 	
@@ -27,20 +27,20 @@ class StrategoTest is subclass of TestCase
 			dcl redBack: set of Stratego`Point := Stratego`allPointsFiltered(Stratego`isInBackRow(<Red>));
 			
 				--genAllPoints(rule.boardSize)
-			Assert`assertTrue(Utils`sprintf("Red and blue areas should have same cardinality, but are: {} and {}", [card redArea, card bluArea]), card bluArea = card redArea);
-			Assert`assertTrue(Utils`sprintf("Red and blue areas should have cardinality of 40, but are: {} and {}", [card redArea, card bluArea]), card bluArea = 40 and  card redArea = 40);
-			Assert`assertTrue(Utils`sprintf("Red and blue areas should be symmetric, but are \n {} \n{}", [redArea, bluArea]), symmetricAreas(bluArea, redArea));
-			Assert`assertTrue(Utils`sprintf("Red and blue backs should have cardinality of 10, but are: {} and {}", [card redBack, card bluBack]), card bluBack = 10 and  card redBack = 10);
-			Assert`assertTrue(Utils`sprintf("Red and blue backs should have same cardinality, but are: {} and {}", [card redBack, card bluBack]), card bluBack = card redBack);
-			Assert`assertTrue(Utils`sprintf("Red and blue backs should be symmetric, but are \n {} \n{}", [redBack, bluBack]), symmetricAreas(bluBack, redBack));
+			Assert`assertTrue(StrategoUtils`sprintf("Red and blue areas should have same cardinality, but are: {} and {}", [card redArea, card bluArea]), card bluArea = card redArea);
+			Assert`assertTrue(StrategoUtils`sprintf("Red and blue areas should have cardinality of 40, but are: {} and {}", [card redArea, card bluArea]), card bluArea = 40 and  card redArea = 40);
+			Assert`assertTrue(StrategoUtils`sprintf("Red and blue areas should be symmetric, but are \n {} \n{}", [redArea, bluArea]), symmetricAreas(bluArea, redArea));
+			Assert`assertTrue(StrategoUtils`sprintf("Red and blue backs should have cardinality of 10, but are: {} and {}", [card redBack, card bluBack]), card bluBack = 10 and  card redBack = 10);
+			Assert`assertTrue(StrategoUtils`sprintf("Red and blue backs should have same cardinality, but are: {} and {}", [card redBack, card bluBack]), card bluBack = card redBack);
+			Assert`assertTrue(StrategoUtils`sprintf("Red and blue backs should be symmetric, but are \n {} \n{}", [redBack, bluBack]), symmetricAreas(bluBack, redBack));
 		);
 		
 		public test2() == (
 			dcl inst: StrategoState`Instance := StrategoOperations`newRandomInstance();
 			StrategoOperations`printBoard(inst);
 			Assert`assertTrue("Game should not be over", StrategoState`gameOver(inst) = false);
-			Assert`assertTrue("Blu should have all pieces expected \n{}\nwas\n{}", Utils`sameElems[Stratego`Piece](StrategoState`getPieces(inst.board)(<Blu>))(StrategoRules`getAllPieces(inst.ruleSet)(<Blu>)));
-			Assert`assertTrue("Red should have all pieces", Utils`sameElems[Stratego`Piece](StrategoState`getPieces(inst.board)(<Red>))(StrategoRules`getAllPieces(inst.ruleSet)(<Red>)));
+			Assert`assertTrue("Blu should have all pieces expected \n{}\nwas\n{}", StrategoUtils`sameElems[Stratego`Piece](StrategoState`getPieces(inst.board)(<Blu>))(StrategoRules`getAllPieces(inst.ruleSet)(<Blu>)));
+			Assert`assertTrue("Red should have all pieces", StrategoUtils`sameElems[Stratego`Piece](StrategoState`getPieces(inst.board)(<Red>))(StrategoRules`getAllPieces(inst.ruleSet)(<Red>)));
 			Assert`assertTrue("Blu captures should be empty", StrategoState`getCaptures(inst)(<Blu>) = []);
 			Assert`assertTrue("Red captures should be empty", StrategoState`getCaptures(inst)(<Red>) = []);
 		);
@@ -52,7 +52,7 @@ class StrategoTest is subclass of TestCase
 						inst: StrategoState`Instance := StrategoState`placePiece(original)(piece)(srcPoint);
 						
 				Assert`assertTrue("Piece was not placed correctly", StrategoState`pieceAt(inst.board)(srcPoint) = piece);
-				Assert`assertTrue(Utils`sprintf("Moves were different than expected, was: {}", [Stratego`possibleMoves(inst)]), expected = Stratego`possibleMoves(inst));
+				Assert`assertTrue(StrategoUtils`sprintf("Moves were different than expected, was: {}", [Stratego`possibleMoves(inst)]), expected = Stratego`possibleMoves(inst));
 				
 				for y = 1 to 10 do (
 					for x = 1 to 10 do (

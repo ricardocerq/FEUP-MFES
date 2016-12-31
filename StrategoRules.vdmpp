@@ -30,7 +30,7 @@ class StrategoRules
 			cannotBeRescued: set of Stratego`Character
 			
 			inv mk_RuleSet(-,-,-,m,-,smr,-,-,-) == 
-					Utils`reduceMap[Stratego`Character, nat, nat]
+					StrategoUtils`reduceMap[Stratego`Character, nat, nat]
 					(lambda acc: nat, c: Stratego`Character, n: nat & acc + n)
 					(0)
 					(m)
@@ -96,7 +96,7 @@ class StrategoRules
 		
 			public getStrength: RuleSet -> Stratego`Character -> nat
 				getStrength(ruleset)(character) ==
-					Utils`indexOf[Stratego`Character](ruleset.characterStrengths)(character)
+					StrategoUtils`indexOf[Stratego`Character](ruleset.characterStrengths)(character)
 			;
 			
 			public getMovementRange: RuleSet->Stratego`Character-> nat
@@ -115,8 +115,8 @@ class StrategoRules
 			
 			public getAllCharacters: RuleSet -> seq of Stratego`Character 
 				getAllCharacters(ruleSet) ==
-					Utils`countToSeq[Stratego`Character](ruleSet.multiplicities)
-				post Utils`countElems[Stratego`Character](RESULT) = ruleSet.multiplicities
+					StrategoUtils`countToSeq[Stratego`Character](ruleSet.multiplicities)
+				post StrategoUtils`countElems[Stratego`Character](RESULT) = ruleSet.multiplicities
 			;
 			
 			public getAllPieces: RuleSet -> Stratego`Team -> seq of Stratego`Piece

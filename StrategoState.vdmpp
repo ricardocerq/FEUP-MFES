@@ -61,7 +61,7 @@ class StrategoState
 		
 		public getAllPieces: Board -> seq of Stratego`Piece
 			getAllPieces(board) ==
-				Utils`reduceMap[Stratego`Point, Stratego`Piece, seq of Stratego`Piece](lambda acc: seq of Stratego`Piece, -: Stratego`Point, piece: Stratego`Piece & acc ^ [piece])
+				StrategoUtils`reduceMap[Stratego`Point, Stratego`Piece, seq of Stratego`Piece](lambda acc: seq of Stratego`Piece, pt: Stratego`Point, piece: Stratego`Piece & acc ^ [piece])
 				([])
 				(board)
 		;
@@ -133,7 +133,7 @@ class StrategoState
 		
 		public getCaptures: StrategoRules`RuleSet -> Board -> Stratego`Team -> seq of Stratego`Piece
 			getCaptures(ruleSet)(board)(team) ==
-				Utils`diff[Stratego`Piece](StrategoRules`getAllPieces(ruleSet)(team))(getPieces(board)(team))
+				StrategoUtils`diff[Stratego`Piece](StrategoRules`getAllPieces(ruleSet)(team))(getPieces(board)(team))
 		;
 		
 		public getCaptures: StrategoState`Instance -> Stratego`Team -> seq of Stratego`Piece
@@ -167,7 +167,7 @@ class StrategoState
 						)
 		;
 		
-		public fillBoard: StrategoRules`RuleSet -> Utils`Ordering -> Utils`Ordering -> Board
+		public fillBoard: StrategoRules`RuleSet -> StrategoUtils`Ordering -> StrategoUtils`Ordering -> Board
 			fillBoard(ruleSet)(ordersBlu)(ordersRed) == (
 				let areaGen = lambda t: Stratego`Team & Stratego`allPointsFiltered(Stratego`isInTeamArea(t)),
 						bluArea = areaGen(<Blu>),
@@ -176,8 +176,8 @@ class StrategoState
 						bluPieces = teamToPieces(<Blu>),
 						redPieces = teamToPieces(<Red>) in (
 						
-							Utils`createMap[Stratego`Point, Stratego`Piece](bluArea)(Utils`rearrange[Stratego`Piece](ordersBlu)(bluPieces)) ++
-							Utils`createMap[Stratego`Point, Stratego`Piece](redArea)(Utils`rearrange[Stratego`Piece](ordersRed)(redPieces))
+							StrategoUtils`createMap[Stratego`Point, Stratego`Piece](bluArea)(StrategoUtils`rearrange[Stratego`Piece](ordersBlu)(bluPieces)) ++
+							StrategoUtils`createMap[Stratego`Point, Stratego`Piece](redArea)(StrategoUtils`rearrange[Stratego`Piece](ordersRed)(redPieces))
 				
 				)
 			)
@@ -203,8 +203,8 @@ class StrategoState
 		public static fillBoardRandom: StrategoRules`RuleSet ==> [Board]
 			fillBoardRandom(ruleSet) == (
 				let num = StrategoRules`getNumberOfCharacters(),
-						bluOrder = Utils`randomOrdering(num),
-						redOrder = Utils`randomOrdering(num) in (
+						bluOrder = StrategoUtils`randomOrdering(num),
+						redOrder = StrategoUtils`randomOrdering(num) in (
 					return fillBoard(ruleSet)(bluOrder)(redOrder);
 				)
 			)
