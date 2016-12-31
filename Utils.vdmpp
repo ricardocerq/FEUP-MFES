@@ -300,10 +300,14 @@ class Utils
 						forall val in set dom RESULT & RESULT(val) = len [el | el in seq list & el = val]
 		; 
 		
+		public addElem[@T]: @T -> seq of @T -> seq of @T
+			addElem(el)(list) ==
+				list^[el]
+		;
 		
 		public repeatElem[@T]: @T -> nat -> seq of @T
 			repeatElem(elem)(count) ==
-				((lambda acc: seq of @T & acc ^ [elem])**count)([])
+				(addElem[@T](elem)**count)([])
 		;
 		-------------------------------------------------------------------------------------------------------------
 		
