@@ -27,12 +27,12 @@ class StrategoTest is subclass of TestCase
 			dcl redBack: set of Stratego`Point := Stratego`allPointsFiltered(Stratego`isInBackRow(<Red>));
 			
 				--genAllPoints(rule.boardSize)
-			Assert`assertTrue(StrategoUtils`sprintf("Red and blue areas should have same cardinality, but are: {} and {}", [card redArea, card bluArea]), card bluArea = card redArea);
-			Assert`assertTrue(StrategoUtils`sprintf("Red and blue areas should have cardinality of 40, but are: {} and {}", [card redArea, card bluArea]), card bluArea = 40 and  card redArea = 40);
-			Assert`assertTrue(StrategoUtils`sprintf("Red and blue areas should be symmetric, but are \n {} \n{}", [redArea, bluArea]), symmetricAreas(bluArea, redArea));
-			Assert`assertTrue(StrategoUtils`sprintf("Red and blue backs should have cardinality of 10, but are: {} and {}", [card redBack, card bluBack]), card bluBack = 10 and  card redBack = 10);
-			Assert`assertTrue(StrategoUtils`sprintf("Red and blue backs should have same cardinality, but are: {} and {}", [card redBack, card bluBack]), card bluBack = card redBack);
-			Assert`assertTrue(StrategoUtils`sprintf("Red and blue backs should be symmetric, but are \n {} \n{}", [redBack, bluBack]), symmetricAreas(bluBack, redBack));
+			Assert`assertTrue(StrategoOperations`sprintf("Red and blue areas should have same cardinality, but are: {} and {}", [card redArea, card bluArea]), card bluArea = card redArea);
+			Assert`assertTrue(StrategoOperations`sprintf("Red and blue areas should have cardinality of 40, but are: {} and {}", [card redArea, card bluArea]), card bluArea = 40 and  card redArea = 40);
+			Assert`assertTrue(StrategoOperations`sprintf("Red and blue areas should be symmetric, but are \n {} \n{}", [redArea, bluArea]), symmetricAreas(bluArea, redArea));
+			Assert`assertTrue(StrategoOperations`sprintf("Red and blue backs should have cardinality of 10, but are: {} and {}", [card redBack, card bluBack]), card bluBack = 10 and  card redBack = 10);
+			Assert`assertTrue(StrategoOperations`sprintf("Red and blue backs should have same cardinality, but are: {} and {}", [card redBack, card bluBack]), card bluBack = card redBack);
+			Assert`assertTrue(StrategoOperations`sprintf("Red and blue backs should be symmetric, but are \n {} \n{}", [redBack, bluBack]), symmetricAreas(bluBack, redBack));
 		);
 		
 		public test2() == (
@@ -52,7 +52,7 @@ class StrategoTest is subclass of TestCase
 						inst: StrategoState`Instance := StrategoState`placePiece(original)(piece)(srcPoint);
 						
 				Assert`assertTrue("Piece was not placed correctly", StrategoState`pieceAt(inst.board)(srcPoint) = piece);
-				Assert`assertTrue(StrategoUtils`sprintf("Moves were different than expected, was: {}", [Stratego`possibleMoves(inst)]), expected = Stratego`possibleMoves(inst));
+				Assert`assertTrue(StrategoOperations`sprintf("Moves were different than expected, was: {}", [Stratego`possibleMoves(inst)]), expected = Stratego`possibleMoves(inst));
 				
 				for y = 1 to 10 do (
 					for x = 1 to 10 do (

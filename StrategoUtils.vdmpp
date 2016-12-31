@@ -153,29 +153,7 @@ class StrategoUtils
 			post forall e in set list & f(e) <=> e in set RESULT
 		;
 		
-		-------------------------------------------------------------------------------------------------------------
-		
-		private sprintfAuxMeasure: seq of char * seq of ? * seq of char -> nat
-			sprintfAuxMeasure(format, -, -) ==
-				len format
-		;
-		
-		public sprintfAux: seq of char * seq of ? * seq of char -> seq of char
-			sprintfAux(format, list, res) ==
-				if(len format = 0)
-					then res
-				else if(hd format = '{' and hd tl format = '}')
-							 then sprintfAux(tl tl format, tl list, res ^ VDMUtil`val2seq_of_char[?](hd list))
-							 else sprintfAux(tl format, list, res ^ [hd format])
-			
-			measure sprintfAuxMeasure
-		;
-		
-		public sprintf: seq of char * seq of ? -> seq of char
-			sprintf(format, list) ==
-				sprintfAux(format, list, "")
-		;
-		
+
 		-------------------------------------------------------------------------------------------------------------
 		
 		public minAndMax: real -> real -> real * real
@@ -335,35 +313,7 @@ class StrategoUtils
 		
 		-------------------------------------------------------------------------------------------------------------
 		
-	operations
-	
-		public static randomOrdering: nat ==> Ordering
-			randomOrdering(n) == (
-				dcl orders: seq of nat := [];
-				for x = 0 to n - 1  do (
-					orders := orders ^ [MATH`rand(n - x) + 1];
-				);
-				return orders;
-			)
-			
-			post len RESULT = n
-		;
-		
-		-------------------------------------------------------------------------------------------------------------
-		
-		public static shuffle: seq of ? ==> seq of ?
-			shuffle(list) == (
-				return rearrange[?](randomOrdering(len list))(list);
-			)
-		;
-		
-		-------------------------------------------------------------------------------------------------------------
-		
-		public static printf: seq of char * seq of ? ==> ()
-			printf(format, list) == (
-				IO`print(sprintf(format, list))
-			)
-		;
+
 		
 	types
 	
