@@ -203,8 +203,8 @@ class StrategoState
 		public static fillBoardRandom: StrategoRules`RuleSet ==> [Board]
 			fillBoardRandom(ruleSet) == (
 				let num = StrategoRules`getNumberOfCharacters(),
-						bluOrder = StrategoUtils`randomOrdering(num),
-						redOrder = StrategoUtils`randomOrdering(num) in (
+						bluOrder = StrategoOperations`randomOrdering(num),
+						redOrder = StrategoOperations`randomOrdering(num) in (
 					return fillBoard(ruleSet)(bluOrder)(redOrder);
 				)
 			)
