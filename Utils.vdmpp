@@ -300,6 +300,19 @@ class Utils
 						forall val in set dom RESULT & RESULT(val) = len [el | el in seq list & el = val]
 		; 
 		
+		
+		public repeatElem[@T]: @T -> nat -> seq of @T
+			repeatElem(elem)(count) ==
+				((lambda acc: seq of @T & acc ^ [elem])**count)([])
+		;
+		-------------------------------------------------------------------------------------------------------------
+		
+		public countToSeq[@L]: map @L to nat -> seq of @L
+			countToSeq(m) == 
+				reduceMap[@L, nat, seq of @L](lambda acc: seq of @L, t: @L, mult: nat & acc ^ repeatElem[@L](t)(mult))([])(m)
+		;
+		
+		
 		-------------------------------------------------------------------------------------------------------------
 		
 		public sameElems[@T]: seq of @T -> seq of @T -> bool

@@ -115,12 +115,8 @@ class StrategoRules
 			
 			public getAllCharacters: RuleSet -> seq of Stratego`Character 
 				getAllCharacters(ruleSet) ==
-					conc Utils`mapFunctionMap[Stratego`Character, nat, seq of Stratego`Character]
-						(lambda c: Stratego`Character, m: nat & 
-							((lambda acc: seq of Stratego`Character & acc ^ [c])**m)([])
-						)
-						(ruleSet.multiplicities)
-					post Utils`countElems[Stratego`Character](RESULT) = ruleSet.multiplicities
+					Utils`countToSeq[Stratego`Character](ruleSet.multiplicities)
+				post Utils`countElems[Stratego`Character](RESULT) = ruleSet.multiplicities
 			;
 			
 			public getAllPieces: RuleSet -> Stratego`Team -> seq of Stratego`Piece
