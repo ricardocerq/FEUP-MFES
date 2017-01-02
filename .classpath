@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="generated/java/lib/codegen-runtime-sources.jar"/>
-	<classpathentry kind="lib" path="generated/java/lib/codegen-runtime.jar"/>
+	<classpathentry kind="lib" path="lib/gui/ast.jar"/>
+	<classpathentry kind="lib" path="lib/gui/interpreter.jar"/>
+	<classpathentry kind="lib" path="lib/gui/parser.jar"/>
+	<classpathentry kind="lib" path="lib/gui/typechecker.jar"/>
+	<classpathentry kind="lib" path="lib/generated/codegen-runtime-sources.jar"/>
+	<classpathentry kind="lib" path="lib/generated/codegen-runtime.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
