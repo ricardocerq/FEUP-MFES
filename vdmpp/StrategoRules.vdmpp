@@ -118,7 +118,6 @@ class StrategoRules
 							Stratego`toCharacters(RESULT) = getAllCharacters(ruleSet)
 			;
 			
-			
 			public compareChar: RuleSet -> Stratego`Character -> Stratego`Character -> StrategoUtils`ComparisonResult
 				compareChar(ruleSet)(c1)(c2) ==
 					if(c1 = c2) then
@@ -133,7 +132,8 @@ class StrategoRules
 				resolveAttack(ruleSet)(p1)(p2) ==
 					if(p2 = nil) then 
 						mk_(true, false)
-					else cases compareChar(ruleSet)(p1.character)(p2.character):
+					else 
+					cases compareChar(ruleSet)(p1.character)(p2.character):
 						<GREATER> -> mk_(true, false),
 						<LESSER> -> mk_(false, true),
 						<EQUAL> -> (
