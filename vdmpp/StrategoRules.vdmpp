@@ -122,7 +122,8 @@ class StrategoRules
 				compareChar(ruleSet)(c1)(c2) ==
 					if(c1 = c2) then
 						<EQUAL>
-					else if(c1 in set dom ruleSet.specialStrengths and ruleSet.specialStrengths(c1) = c2 or getStrength(ruleSet)(c1) > getStrength(ruleSet)(c2)) then
+					else if((c1 in set dom ruleSet.specialStrengths and ruleSet.specialStrengths(c1) = c2) or 
+									getStrength(ruleSet)(c1) > getStrength(ruleSet)(c2)) then
 						<GREATER>
 					else 
 						<LESSER>
