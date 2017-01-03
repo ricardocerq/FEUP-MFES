@@ -84,6 +84,11 @@ public class StrategoWindow extends JFrame {
 	private void attachListenersToComponents() {
 		btn1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				try {
+					System.out.println("return " + StrategoWindow.this.view.strategoCtrl.execute("let inst = StrategoOperations`newRandomInstance() in gr.sendData(StrategoOperations`getGameData(inst))"));
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
 			}
 		});
 
