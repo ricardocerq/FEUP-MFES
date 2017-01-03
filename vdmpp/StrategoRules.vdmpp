@@ -119,7 +119,7 @@ class StrategoRules
 			;
 			
 			
-			public compareChar: RuleSet -> Stratego`Character -> Stratego`Character -> (<EQUAL> | <GREATER> | <LESSER>) 
+			public compareChar: RuleSet -> Stratego`Character -> Stratego`Character -> StrategoUtils`ComparisonResult
 				compareChar(ruleSet)(c1)(c2) ==
 					if(c1 = c2) then
 						<EQUAL>

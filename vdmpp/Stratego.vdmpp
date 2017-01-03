@@ -41,11 +41,13 @@ class Stratego
 		
 	functions
 	
-		public dist: Point -> Point -> real
+		public dist: Point -> Point -> nat
 			dist(src)(dst) == 	
-				MATH`sqrt((src.x-dst.x)*(src.x-dst.x) + (src.y-dst.y)*(src.y-dst.y))
-				
-			post RESULT * RESULT = (src.x-dst.x)*(src.x-dst.x) + (src.y-dst.y)*(src.y-dst.y) 
+				StrategoUtils`applyToMinAndMax[nat]
+				(lambda -: nat, max: nat & max)
+				(abs(src.x-dst.x))
+				(abs(src.y-dst.y))
+			pre aligned(src)(dst)
 		;
 		
 		public alignment: Point -> Point -> (bool*bool)
