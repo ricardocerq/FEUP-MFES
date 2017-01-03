@@ -20,7 +20,7 @@ public class StrategoWindow extends JFrame {
 	private static final long serialVersionUID = 1L;
 
 	JPanel buttonPanel = new JPanel();
-	JButton btn1;
+	JButton btn_newgame;
 	JButton btn3;
 	JButton btn2;
 
@@ -49,7 +49,7 @@ public class StrategoWindow extends JFrame {
 		this.model = new Model();
 		
 		// add buttons
-		btn1 = new JButton("Button 1");
+		btn_newgame = new JButton("New Game");
 		btn2 = new JButton("Button 2");
 		btn3 = new JButton("Button 3");
 
@@ -82,7 +82,7 @@ public class StrategoWindow extends JFrame {
 	}
 
 	private void attachListenersToComponents() {
-		btn1.addActionListener(new ActionListener() {
+		btn_newgame.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					System.out.println("return " + StrategoWindow.this.view.strategoCtrl.execute("let inst = StrategoOperations`newRandomInstance() in gr.sendData(StrategoOperations`getGameData(inst))"));
@@ -107,7 +107,7 @@ public class StrategoWindow extends JFrame {
 		getContentPane().setLayout(new BorderLayout());
 		buttonPanel.setBackground(Color.WHITE);
 		getContentPane().add(BorderLayout.SOUTH, buttonPanel);
-		buttonPanel.add(btn1);
+		buttonPanel.add(btn_newgame);
 		buttonPanel.add(btn2);
 		buttonPanel.add(btn3);
 		getContentPane().add(BorderLayout.CENTER, view);
@@ -116,13 +116,13 @@ public class StrategoWindow extends JFrame {
 	}
 
 	public void DisableButtons() {
-		btn1.setEnabled(false);
+		btn_newgame.setEnabled(false);
 		btn2.setEnabled(false);
 		btn3.setEnabled(false);
 	}
 
 	public void EnableButtons() {
-		btn1.setEnabled(true);
+		btn_newgame.setEnabled(true);
 		btn2.setEnabled(true);
 		btn3.setEnabled(true);
 	}

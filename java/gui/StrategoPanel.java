@@ -116,10 +116,8 @@ class StrategoPanel extends JPanel implements Observer, MouseListener, MouseMoti
 							RecordValue pieceRecord = piece.recordValue(null);
 
 							String character = pieceRecord.fieldmap.get("character").toString();
-							character = character.substring(1, character.length() - 2).toLowerCase();
+							character = character.substring(1, character.length() - 1).toLowerCase();
 							String team = pieceRecord.fieldmap.get("team").toString().substring(1, 2).toLowerCase();
-							
-							System.out.println(character + " " + team);
 							
 							if(character.equals("flag")) {
 								if(team.equals("r"))
@@ -127,16 +125,16 @@ class StrategoPanel extends JPanel implements Observer, MouseListener, MouseMoti
 								else if(team.equals("b"))
 									flag_blu = true;
 							}
-							
-							if(!flag_red) {
-								JOptionPane.showMessageDialog(this, "Blue wins!");
-								gameover = true;
-							} else if(!flag_blu) {
-								JOptionPane.showMessageDialog(this, "Red wins!");
-								gameover = true;
-							}
 						}
 					}
+				}
+				
+				if(!flag_red) {
+					JOptionPane.showMessageDialog(this, "Blue wins!");
+					gameover = true;
+				} else if(!flag_blu) {
+					JOptionPane.showMessageDialog(this, "Red wins!");
+					gameover = true;
 				}
 			} catch (ValueException e) {
 				e.printStackTrace();
