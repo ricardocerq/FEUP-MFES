@@ -1,4 +1,5 @@
 class StrategoOperations
+
 	operations
 	
 		public static instanceString: StrategoState`Instance ==> seq of char
@@ -15,6 +16,7 @@ class StrategoOperations
 				return str;
 			)
 		;
+		
 		public static printBoard: StrategoState`Instance ==>()
 			printBoard(inst) == 
 				IO`println(instanceString(inst))
@@ -37,13 +39,11 @@ class StrategoOperations
 			post len RESULT = n
 		;
 		
-		
 		public static shuffle: seq of ? ==> seq of ?
 			shuffle(list) == (
 				return StrategoUtils`rearrange[?](randomOrdering(len list))(list);
 			)
 		;
-		
 		
 		public static printf: seq of char * seq of ? ==> ()
 			printf(format, list) == (
@@ -102,7 +102,5 @@ class StrategoOperations
 			sprintf(format, list) ==
 				sprintfAux(format, list, "")
 		;
-		
-		
 
 end StrategoOperations

@@ -94,11 +94,11 @@ class StrategoRules
 						}
 					)
 			;
-		
+			-- a character's strength corresponds with its position in the array of character strengths
 			public getStrength: RuleSet -> Stratego`Character -> nat
 				getStrength(ruleset)(character) ==
 					StrategoUtils`indexOf[Stratego`Character](ruleset.characterStrengths)(character)
-					
+				
 				pre character in set elems ruleset.characterStrengths
 				post ruleset.characterStrengths(RESULT) = character
 			;
@@ -131,14 +131,6 @@ class StrategoRules
 							Stratego`toCharacters(RESULT) = getAllCharacters(ruleSet)
 			;
 			
-			--public stronger: RuleSet -> Stratego`Character -> Stratego`Character -> bool 
-			--	stronger(ruleSet)(c1)(c2) ==
-			--		if(c1 in set dom ruleSet.specialStrengths and ruleSet.specialStrengths(c1) = c2) then
-			--			true
-			--		else getStrength(ruleSet)(c1) > getStrength(ruleSet)(c2)
-			--		
-			--	pre c1 <> c2 
-			--;
 			
 			public compareChar: RuleSet -> Stratego`Character -> Stratego`Character -> (<EQUAL> | <GREATER> | <LESSER>) 
 				compareChar(ruleSet)(c1)(c2) ==
@@ -162,7 +154,6 @@ class StrategoRules
 									mk_(true,false)
 								else 
 									mk_(false,false)
-							
 						)
 					end
 					
