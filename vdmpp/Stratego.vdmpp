@@ -58,7 +58,8 @@ class Stratego
 		
 		public aligned: Point->Point->bool
 			aligned(src)(dst) ==
-				let align = alignment(src)(dst) in (
+				let align = alignment(src)(dst) 
+				in (
 					not (align.#1 and align.#2) and align.#1 or align.#2
 				)
 		;
@@ -191,7 +192,7 @@ class Stratego
 		public pointsBetween: Point -> Point ->  set of Point
 			pointsBetween(src)(dst) ==
 				let align = alignment(src)(dst)
-						in (
+				in (
 						if(align.#1)
 							then pointsInRanges({src.x})(intervalSet(src.y)( dst.y))
 							else pointsInRanges(intervalSet(src.x)(dst.x))({src.y})
@@ -202,7 +203,8 @@ class Stratego
 		public getPointsInRange: nat -> Point -> set of Point
 			getPointsInRange(range)(point) ==
 			pointsFiltered(
-				let range1 = range + 1 in (
+				let range1 = range + 1 
+				in (
 					pointsInRanges({point.x})(intervalSet(point.y-range1)(point.y+range1)) union
 					pointsInRanges(intervalSet(point.x-range1)(point.x+range1))({point.y})
 				)												

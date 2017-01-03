@@ -17,27 +17,22 @@ class StrategoRules
 		};
 		
 	types
-	
+	--mu
 		public RuleSet::
-			maxRescuesPerPlayer: nat1
 			agressorAdvantage: bool
-			silentDefense: bool
 			multiplicities: map Stratego`Character to nat
 			characterStrengths: seq of Stratego`Character
 			specialMovementRanges: map Stratego`Character to nat
 			specialStrengths: map Stratego`Character to Stratego`Character
-			cannotRescue: set of Stratego`Character
-			cannotBeRescued: set of Stratego`Character
 			
-			inv mk_RuleSet(-,-,-,m,-,smr,-,-,-) ==
+			inv mk_RuleSet(-,mul,-,-,-) ==
 				--sum of the number of each type of character should add up to the total amount necessary to fill a player's side 
 					StrategoUtils`reduceMap[Stratego`Character, nat, nat]
-					(lambda acc: nat, c: Stratego`Character, n: nat & acc + n)
+					(lambda acc: nat, -: Stratego`Character, n: nat & acc + n)
 					(0)
-					(m)
+					(mul)
 						= boardSize * boardSize * sideProportion
 					
-					and smr(<Flag>) = 0
 		;
 				
 	operations
@@ -46,8 +41,6 @@ class StrategoRules
 			public getDefaultRuleSet: () -> RuleSet
 				getDefaultRuleSet() ==
 					mk_RuleSet(
-						 2, 
-						 false, 
 						 false, 
 						 {
 							<Flag> |-> 1 ,
@@ -85,13 +78,7 @@ class StrategoRules
 						{
 							<Spy> |-> <Marshall>,
 							<Miner> |-> <Bomb>
-						}, 
-						{
-							<Scout>
-						}, 
-						{
-							<Bomb>
-						}
+						} 
 					)
 			;
 			-- a character's strength corresponds with its position in the array of character strengths

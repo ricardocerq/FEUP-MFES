@@ -1,4 +1,19 @@
 class StrategoUtils
+	types
+	
+		public Ordering = seq of nat
+			inv	list ==
+				isOrdering(list)
+		;
+		
+		public ComparisonResult = 
+			<EQUAL> 
+		| <GREATER> 
+		| <LESSER>
+		;
+
+		-------------------------------------------------------------------------------------------------------------
+		
 	functions
 	
 		private reduceSeqMeasure[@T, @R]: (@R * @T -> @R) * @R * seq of @T +> nat
@@ -78,25 +93,16 @@ class StrategoUtils
 		
 		-------------------------------------------------------------------------------------------------------------
 		
-		private mapFunctionSeqMeasure[@P, @R]: (@P->@R) * seq of @P +> nat
-			mapFunctionSeqMeasure(-,list) == 
-				len list
-		;
-		
 		public mapFunctionSeq[@P, @R]: (@P->@R) -> seq of @P -> seq of @R
 			mapFunctionSeq(f)(list) == 
-				if(len list = 0)
-					then []
-				else [f(hd list)] ^ mapFunctionSeq[@P, @R](f)(tl list)
-			
-			measure mapFunctionSeqMeasure
+				[f(x) | x in seq list]
 		;
 		
 		-------------------------------------------------------------------------------------------------------------
 		
 		public mapFunctionSet[@P, @R]: (@P->@R) -> set of @P -> set of @R
 			mapFunctionSet(f)(list) == 
-				elems (mapFunctionSeq[@P,@R](f)(VDMUtil`set2seq[@P](list)))
+				{f(x) | x in set list}
 		;
 		
 		-------------------------------------------------------------------------------------------------------------
@@ -122,26 +128,10 @@ class StrategoUtils
 		;
 		
 		-------------------------------------------------------------------------------------------------------------
-		
-		private mapFunctionMapAuxMeasure[@L, @R, @S]: (@L*@R->@S) * map @L to @R * seq of @L +> nat
-			mapFunctionMapAuxMeasure(-, -, list) ==
-				len list
-		;
-		
-		private mapFunctionMapAux[@L, @R, @S]: (@L*@R->@S) -> map @L to @R -> seq of @L -> seq of @S
-			mapFunctionMapAux(f)(m)(list) ==
-				if(len list = 0)
-					then []
-			else [f(hd list, m(hd list))] ^ mapFunctionMapAux[@L, @R, @S](f)(m)(tl list)
-			
-			measure mapFunctionMapAuxMeasure
-		;
 
-		-------------------------------------------------------------------------------------------------------------
-		
-		public mapFunctionMap[@L, @R, @S]: (@L*@R->@S) -> map @L to @R -> seq of @S
+		public mapFunctionMap[@L, @R, @S]: (@L*@R->@S) -> map @L to @R -> set of @S
 			mapFunctionMap(f)(m) ==
-				mapFunctionMapAux[@L, @R, @S](f)(m)(VDMUtil`set2seq[@L](dom m))
+				{ f(l,r) | l in set dom m, r in set rng m}
 		;
 		
 		-------------------------------------------------------------------------------------------------------------
@@ -170,31 +160,22 @@ class StrategoUtils
 			applyToMinAndMax(f)(a)(b) ==
 				let minAndMax = minAndMax(a)(b),
 						min = minAndMax.#1,
-						max = minAndMax.#2 in (
-							f(min, max)	
+						max = minAndMax.#2 
+				in (
+						f(min, max)	
 				)
 				
 				post (a >= b => RESULT = f(b,a)) and
 						 (a < b => RESULT = f(a,b))
 		;
 		
-		
 		-------------------------------------------------------------------------------------------------------------
-		
-		public removeIndexMeasure[@T]: seq of @T * nat1 +> nat
-			removeIndexMeasure(list,-) ==
-				len list
-		;
 		
 		public removeIndex[@T]: seq of @T -> nat1 -> seq of @T
 			removeIndex(list)(i) ==
-				if(i = 1) then
-					tl list
-					else [hd list] ^ removeIndex[@T](tl list)(i-1)
-			
+				[list(n) | n in set inds list & n <> i]
 			pre i >= 1 and i <= len list
 			post len list - 1 = len RESULT
-			measure removeIndexMeasure
 		;
 		
 		-------------------------------------------------------------------------------------------------------------
@@ -300,7 +281,6 @@ class StrategoUtils
 				reduceMap[@L, nat, seq of @L](lambda acc: seq of @L, t: @L, mult: nat & acc ^ repeatElem[@L](t)(mult))([])(m)
 		;
 		
-		
 		-------------------------------------------------------------------------------------------------------------
 		
 		public sameElems[@T]: seq of @T -> seq of @T -> bool
@@ -310,13 +290,4 @@ class StrategoUtils
 			post RESULT <=> (len list1 = len list2 and countElems[@T](list1) = countElems[@T](list1))
 		;
 		
-		-------------------------------------------------------------------------------------------------------------
-		
-	types
-	
-		public Ordering = seq of nat
-			inv	list ==
-				isOrdering(list)
-		;
-
 end StrategoUtils

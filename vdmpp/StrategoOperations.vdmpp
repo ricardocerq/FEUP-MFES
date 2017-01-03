@@ -27,17 +27,6 @@ class StrategoOperations
 			let ini = StrategoState`defaultStartingInstance() in (StrategoState`setBoard(ini, StrategoState`fillBoardRandom(ini.ruleSet)))
 		;
 		
-		public static randomOrdering: nat ==> StrategoUtils`Ordering
-			randomOrdering(n) == (
-				dcl orders: seq of nat := [];
-				for x = 0 to n - 1  do (
-					orders := orders ^ [MATH`rand(n - x) + 1];
-				);
-				return orders;
-			)
-			
-			post len RESULT = n
-		;
 		
 		public static shuffle: seq of ? ==> seq of ?
 			shuffle(list) == (
@@ -51,7 +40,16 @@ class StrategoOperations
 			)
 		;
 		
+		public static randomOrdering: nat ==> StrategoUtils`Ordering
+			randomOrdering(n) == (
+				 return [MATH`rand(n - x) + 1 | x in set {0,..., n - 1}];
+			)
+			post len RESULT = n
+		;
+		
 	functions
+	
+		
 		
 		public getGameData: StrategoState`Instance -> seq of ?
 			getGameData(inst) ==

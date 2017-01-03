@@ -2,7 +2,8 @@ class StrategoState
 	
 	types
 	
-		public Board  = map Stratego`Point to Stratego`Piece
+		public Board 
+			= map Stratego`Point to Stratego`Piece
 		;
 		
 		public Player::
@@ -16,14 +17,15 @@ class StrategoState
 			players: map Stratego`Team to Player
 			board: Board
 			
-			inv mk_Instance(ruleSet,t,pl,board) == 
+			inv mk_Instance(-,-,pl,-) == 
 				forall team in set dom pl & pl(team).team = team and 
 				card dom pl = 2 --and
 				--len pl(t).plays <= len pl(Stratego`getOpponent(t)).plays and
-				--let captureGetter = getCaptures(ruleSet)(board),
-				--		pieceGetter = StrategoRules`getAllPieces(ruleSet) in (
+				--and let captureGetter = getCaptures(rs)(b),
+				--		pieceGetter = StrategoRules`getAllPieces(rs) 
+				--		in (
 				--	StrategoUtils`sameElems[Stratego`Piece]
-				--	(getAllPieces(board) ^ captureGetter(<Blu>) ^ captureGetter(<Red>))
+				--	(getAllPieces(b) ^ captureGetter(<Blu>) ^ captureGetter(<Red>))
 				--	(pieceGetter(<Blu>) ^ pieceGetter(<Red>))
 				--)
 		;
@@ -64,7 +66,7 @@ class StrategoState
 		public getAllPieces: Board -> seq of Stratego`Piece
 			getAllPieces(board) ==
 				StrategoUtils`reduceMap[Stratego`Point, Stratego`Piece, seq of Stratego`Piece]
-				(lambda acc: seq of Stratego`Piece, pt: Stratego`Point, piece: Stratego`Piece & acc ^ [piece])
+				(lambda acc: seq of Stratego`Piece, -: Stratego`Point, piece: Stratego`Piece & acc ^ [piece])
 				([])
 				(board)
 		;
@@ -98,7 +100,8 @@ class StrategoState
 			post StrategoState`pieceAt(RESULT)(m.src) = nil and 
 					 let srcPiece = StrategoState`pieceAt(board)(m.src),
 							 dstPiece = StrategoState`pieceAt(board)(m.dst),
-							 finalPiece = StrategoState`pieceAt(RESULT)(m.dst) in (
+							 finalPiece = StrategoState`pieceAt(RESULT)(m.dst) 
+					 in (
 								
 								(keepSrc <=> finalPiece = srcPiece) and
 								(keepDst <=> finalPiece = dstPiece)
@@ -106,32 +109,18 @@ class StrategoState
 		;
 		
 		public setBoard: Instance * Board -> Instance
-			setBoard(inst, board) ==
-				mk_Instance(inst.ruleSet, inst.currentTeam, inst.players, board)
-			
-			post RESULT.ruleSet = inst.ruleSet and
-					 RESULT.currentTeam = inst.currentTeam and
-					 RESULT.players = inst.players and
-					 RESULT.board = board
-		;
-		
-		public placePieceBoard: Board -> Stratego`Piece -> Stratego`Point -> Board
-			placePieceBoard(board)(piece)(p) ==
-				board ++ {p |-> piece}
-			
-			pre pieceAt(board)(p) = nil and
-					not Stratego`isLake(p)
-					
-			post pieceAt(RESULT)(p) = piece
+			setBoard(inst, newboard) ==
+				mu(inst, board |-> newboard)
+			post RESULT = mu(inst, board |-> newboard)
 		;
 		
 		public placePiece: Instance -> Stratego`Piece -> Stratego`Point -> Instance
 			placePiece(inst)(piece)(p) ==
-				mk_Instance(inst.ruleSet, inst.currentTeam, inst.players, placePieceBoard(inst.board)(piece)(p))
+				mu(inst, board |-> inst.board ++ {p |-> piece})
 			
-			pre pre_placePieceBoard(inst.board)(piece)(p)
-			
-			post post_placePieceBoard(inst.board)(piece)(p, RESULT.board)
+			pre pieceAt(inst.board)(p) = nil and
+					not Stratego`isLake(p)
+			post pieceAt(RESULT.board)(p) = piece
 		;
 		
 		public getCaptures: StrategoState`Instance -> Stratego`Team -> seq of Stratego`Piece
@@ -141,23 +130,27 @@ class StrategoState
 		
 		public repeatedMove: Player -> Stratego`Move -> bool
 				repeatedMove(player)(m) == 
-					let plays = player.plays in (
+					let plays = player.plays 
+					in (
 						if(len plays < 2) then 
 							false
-						else let lastPlay = plays(len plays),
-								secondToLastPlay = plays(len plays-1) in (
-							lastPlay.src = m.dst and 
-							lastPlay.dst = m.src and 
-							secondToLastPlay.src = m.src and 
-							secondToLastPlay.dst = m.dst
-					)
+						else 
+							let lastPlay = plays(len plays),
+									secondToLastPlay = plays(len plays-1) 
+							in (
+								lastPlay.src = m.dst and 
+								lastPlay.dst = m.src and 
+								secondToLastPlay.src = m.src and 
+								secondToLastPlay.dst = m.dst
+							)
 				)
 				
 				post RESULT <=> 
 						 let plays = player.plays in (
 								len plays >= 2 and
 								let lastPlay = plays(len plays),
-										secondToLastPlay = plays(len plays-1) in (
+										secondToLastPlay = plays(len plays-1) 
+								in (
 									lastPlay.src = m.dst and 
 									lastPlay.dst = m.src and 
 									secondToLastPlay.src = m.src and 
@@ -173,7 +166,8 @@ class StrategoState
 						redArea = areaGen(<Red>),
 						teamToPieces = lambda t: Stratego`Team & Stratego`toPieces(StrategoRules`getAllCharacters(ruleSet))(t),
 						bluPieces = teamToPieces(<Blu>),
-						redPieces = teamToPieces(<Red>) in (
+						redPieces = teamToPieces(<Red>) 
+				in (
 						
 							StrategoUtils`createMap[Stratego`Point, Stratego`Piece]
 								(bluArea)
@@ -194,7 +188,8 @@ class StrategoState
 		
 		public gameOver: Instance -> bool
 			gameOver(inst) ==
-				let f = lambda t: Stratego`Team & mk_Stratego`Piece(<Flag>, t) not in set rng inst.board in (
+				let f = lambda t: Stratego`Team & mk_Stratego`Piece(<Flag>, t) not in set rng inst.board 
+				in (
 					f(<Red>) or f(<Blu>)
 				)
 				
@@ -220,7 +215,7 @@ class StrategoState
 						pointsInBetween = Stratego`pointsBetween(m.src)(m.dst),
 						anyLakesInBetween = exists p in set pointsInBetween & Stratego`isLake(p),
 						piecesInBetween = StrategoUtils`mapFunctionSet[Stratego`Point, [Stratego`Piece]](StrategoState`pieceAt(inst.board))(pointsInBetween)
-						in (
+				in (
 						not anyLakesInBetween and
 						srcPiece <> nil and
 						srcPiece.team = inst.currentTeam and
@@ -239,7 +234,8 @@ class StrategoState
 						attackRes = StrategoRules`resolveAttack(inst.ruleSet)(srcPiece)(dstPiece),
 						currTeam = inst.currentTeam,
 						currPlayer = inst.players(currTeam),
-						nextTeam = Stratego`getOpponent(inst.currentTeam) in (
+						nextTeam = Stratego`getOpponent(inst.currentTeam) 
+				in (
 					mk_StrategoState`Instance(
 						inst.ruleSet, 
 						nextTeam,
@@ -270,11 +266,12 @@ class StrategoState
 		
 	operations
 	
-		public static fillBoardRandom: StrategoRules`RuleSet ==> [Board]
+		public static fillBoardRandom: StrategoRules`RuleSet ==> Board
 			fillBoardRandom(ruleSet) == (
 				let num = StrategoRules`getNumberOfCharacters(),
 						bluOrder = StrategoOperations`randomOrdering(num),
-						redOrder = StrategoOperations`randomOrdering(num) in (
+						redOrder = StrategoOperations`randomOrdering(num) 
+				in (
 					return fillBoard(ruleSet)(bluOrder)(redOrder);
 				)
 			)

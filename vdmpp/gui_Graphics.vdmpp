@@ -6,26 +6,6 @@ class gui_Graphics
 				is not yet specified
 		;
 		
-		public testFunc : nat ==> ()
-			testFunc(number) == 
-				is not yet specified
-		;
-		
-		public testFunc2 : StrategoState`Instance ==> ()
-			testFunc2(inst) == 
-				is not yet specified
-		;
-	
-		public board: seq of char ==> ()
-			board(str) == 
-				is not yet specified
-		;
-		
-		public inst: StrategoState`Instance ==> ()
-			inst(i) == 
-				is not yet specified
-		;
-		
 		public sendData: seq of ? ==> ()
 			sendData(list) == 
 				is not yet specified

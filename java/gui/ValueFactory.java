@@ -188,7 +188,7 @@ public class ValueFactory
 	public RecordValue createRecord(String recordName, Value... fields)
 			throws ValueFactoryException
 	{
-
+ff
 		PType type = null;//interpreter.findType(recordName);
 		String[] str = recordName.split("`");
 		LinkedList<PDefinition> l = interpreter.findClass(str[0]).getDefinitions();

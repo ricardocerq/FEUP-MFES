@@ -32,6 +32,7 @@ class StrategoTest is subclass of TestCase
 		);
 		
 		public test2() == (
+			-- testing the board construction and visualization
 			dcl inst: StrategoState`Instance := StrategoOperations`newRandomInstance();
 			StrategoOperations`printBoard(inst);
 			Assert`assertTrue("Game should not be over", StrategoState`gameOver(inst) = false);
@@ -42,6 +43,7 @@ class StrategoTest is subclass of TestCase
 		);
 		
 		private movementTest: Stratego`Character * Stratego`Point * set of Stratego`Move ==> ()
+			
 			movementTest(character, srcPoint, expected) == (
 				dcl original: StrategoState`Instance := StrategoState`defaultStartingInstance(),
 						piece: Stratego`Piece := mk_Stratego`Piece(character, <Blu>),
@@ -58,6 +60,7 @@ class StrategoTest is subclass of TestCase
 		);
 		
 		public test3() == (
+			--testing move validation
 			dcl normalMoveSet: set of Stratego`Move := {mk_Stratego`Move(mk_Stratego`Point(2, 2), mk_Stratego`Point(1, 2)), mk_Stratego`Move(mk_Stratego`Point(2, 2), mk_Stratego`Point(2, 1)), mk_Stratego`Move(mk_Stratego`Point(2, 2), mk_Stratego`Point(2, 3)), mk_Stratego`Move(mk_Stratego`Point(2, 2), mk_Stratego`Point(3, 2))};
 			movementTest(<Scout>, mk_Stratego`Point(2,2), {mk_Stratego`Move(mk_Stratego`Point(2, 2), mk_Stratego`Point(1, 2)), mk_Stratego`Move(mk_Stratego`Point(2, 2), mk_Stratego`Point(2, 1)), mk_Stratego`Move(mk_Stratego`Point(2, 2), mk_Stratego`Point(2, 3)), mk_Stratego`Move(mk_Stratego`Point(2, 2), mk_Stratego`Point(2, 4)), mk_Stratego`Move(mk_Stratego`Point(2, 2), mk_Stratego`Point(2, 5)), mk_Stratego`Move(mk_Stratego`Point(2, 2), mk_Stratego`Point(2, 6)), mk_Stratego`Move(mk_Stratego`Point(2, 2), mk_Stratego`Point(2, 7)), mk_Stratego`Move(mk_Stratego`Point(2, 2), mk_Stratego`Point(2, 8)), mk_Stratego`Move(mk_Stratego`Point(2, 2), mk_Stratego`Point(2, 9)), mk_Stratego`Move(mk_Stratego`Point(2, 2), mk_Stratego`Point(2, 10)), mk_Stratego`Move(mk_Stratego`Point(2, 2), mk_Stratego`Point(3, 2)), mk_Stratego`Move(mk_Stratego`Point(2, 2), mk_Stratego`Point(4, 2)), mk_Stratego`Move(mk_Stratego`Point(2, 2), mk_Stratego`Point(5, 2)), mk_Stratego`Move(mk_Stratego`Point(2, 2), mk_Stratego`Point(6, 2)), mk_Stratego`Move(mk_Stratego`Point(2, 2), mk_Stratego`Point(7, 2)), mk_Stratego`Move(mk_Stratego`Point(2, 2), mk_Stratego`Point(8, 2)), mk_Stratego`Move(mk_Stratego`Point(2, 2), mk_Stratego`Point(9, 2)), mk_Stratego`Move(mk_Stratego`Point(2, 2), mk_Stratego`Point(10, 2))});
 			movementTest(<Flag>, mk_Stratego`Point(2,2), {});
@@ -74,7 +77,7 @@ class StrategoTest is subclass of TestCase
 		);
 		
 		public test4() == (
-			dcl original: StrategoState`Instance := StrategoState`defaultStartingInstance(),
+			dcl 	original: StrategoState`Instance := StrategoState`defaultStartingInstance(),
 						piece: Stratego`Piece := mk_Stratego`Piece(<Spy>, <Blu>),
 						point1: Stratego`Point := mk_Stratego`Point(2,2),
 						point2: Stratego`Point := mk_Stratego`Point(2,3),
@@ -89,20 +92,10 @@ class StrategoTest is subclass of TestCase
 		);
 		
 		public attackTest: bool ==> ()
-			attackTest(agressorAdvantage) == (
+			attackTest(testAgressorAdvantage) == (
 				dcl 	chars: set of Stratego`Character := {<Flag>, <Bomb>, <Spy>, <Scout>, <Miner>, <Sergeant>, <Lieutenant>, <Captain>, <Major>, <Colonel>, <General>, <Marshall>},
 							default: StrategoState`Instance := StrategoState`defaultStartingInstance(),
-							original: StrategoState`Instance := mk_StrategoState`Instance( 
-																											mk_StrategoRules`RuleSet(default.ruleSet.maxRescuesPerPlayer,
-																											agressorAdvantage,
-																											default.ruleSet.silentDefense,
-																											default.ruleSet.multiplicities,
-																											default.ruleSet.characterStrengths,
-																											default.ruleSet.specialMovementRanges,
-																											default.ruleSet.specialStrengths,
-																											default.ruleSet.cannotRescue,
-																											default.ruleSet.cannotBeRescued
-																									 ), default.currentTeam, default.players, default.board), 
+							original: StrategoState`Instance := mu(default, ruleSet |-> mu(default.ruleSet, agressorAdvantage |-> testAgressorAdvantage)), 
 							point1: Stratego`Point := mk_Stratego`Point(2,2),
 							point2: Stratego`Point := mk_Stratego`Point(3,2),
 							move1: Stratego`Move := mk_Stratego`Move(point1, point2)
@@ -120,37 +113,50 @@ class StrategoTest is subclass of TestCase
 
 						if(str1 = str2) then (
 						
-							if(agressorAdvantage) then (
-							
+							if(testAgressorAdvantage) then (
 								Assert`assertTrue("Wrong result", resPiece = pieceSrc);
-								
 							) else (
-							
 								Assert`assertTrue("Wrong result", resPiece = nil);
-								
 							)
 							
 						) else (
 						
 							if(StrategoRules`compareChar(original.ruleSet)(srcChar)(dstChar) = <GREATER>) then (
-							
 								Assert`assertTrue("Wrong result", resPiece = pieceSrc);
-							
 							) else (
-							
 								Assert`assertTrue("Wrong result", resPiece = pieceDst);
-							
 							)
 							
 						)
-						
 					);
 				);
 		);
+		
 		public test5() == (
+			--testing attacks
 			attackTest(false);
 			attackTest(true);
 		);
+		
+		public test6() == (
+		--testing end condition
+			dcl 	original: StrategoState`Instance := StrategoState`defaultStartingInstance(),
+						scout: Stratego`Piece := mk_Stratego`Piece(<Scout>, <Blu>),
+						flag1: Stratego`Piece := mk_Stratego`Piece(<Flag>, <Blu>),
+						flag2: Stratego`Piece := mk_Stratego`Piece(<Flag>, <Red>),
+						scoutp: Stratego`Point := mk_Stratego`Point(2,1),
+						flag1p: Stratego`Point := mk_Stratego`Point(2,3),
+						flag2p: Stratego`Point := mk_Stratego`Point(2,2),
+						move1: Stratego`Move := mk_Stratego`Move(scoutp, flag2p),
+						inst: StrategoState`Instance := StrategoState`placePiece(original)(scout)(scoutp),
+						inst2: StrategoState`Instance := StrategoState`placePiece(inst)(flag1)(flag1p),
+						init: StrategoState`Instance := StrategoState`placePiece(inst2)(flag2)(flag2p),
+						endInst: StrategoState`Instance := StrategoState`skipTurn(StrategoState`executeMove(init)(move1))
+			;
+			Assert`assertTrue("Game should not be over in the beginning", StrategoState`gameOver(init) = false);
+			Assert`assertTrue("Move should be repeated", StrategoState`gameOver(endInst) = true);
+		);
+		
 		public static main() ==
 			new StrategoTest().test1()
 		;
