@@ -311,7 +311,7 @@ class StrategoPanel extends JPanel implements Observer, MouseListener, MouseMoti
 						RecordValue v = isDst(x,y);
 						if(v != null){
 							sel2 = v;
-							String str = "gr.sendData(StrategoOperations`getGameData(Stratego`executeMove(" + model.val.seqValue(null).get(0) + ")(" + 
+							String str = "gr.sendData(StrategoOperations`getGameData(StrategoState`executeMove(" + model.val.seqValue(null).get(0) + ")(" + 
 									valueFactory.createRecord("Stratego`Move", sel1, sel2)
 									+ ")))";
 							str = str.replaceAll("_Instance", "_StrategoState`Instance")

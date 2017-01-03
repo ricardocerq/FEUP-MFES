@@ -3,13 +3,15 @@ class Stratego
 	
 		public Point:: 	
 			x: nat1
-			y: nat1;
+			y: nat1
+		;
 												
 		public Move:: 	
 			src: Point
 			dst: Point
 			--inv mk_Move(s, d) == aligned(s)(d)
-		;				
+		;
+			
 		public Character = 	 
 			<Flag>
 		| <Bomb> 		
@@ -223,64 +225,7 @@ class Stratego
 				StrategoUtils`mapFunctionSeq[Stratego`Piece, Stratego`Character](lambda p: Piece & p.character)(pieces)
 		;
 		
-		public isValidMove: StrategoState`Instance -> Move -> bool
-			isValidMove(inst)(m) ==
-				not isLake(m.src) and
-				not isLake(m.dst) and 
-				aligned(m.src)(m.dst) and 
-				not StrategoState`repeatedMove(inst.players(inst.currentTeam))(m) and
-				let srcPiece = StrategoState`pieceAt(inst.board)(m.src),
-						dstPiece = StrategoState`pieceAt(inst.board)(m.dst),
-						ruleset = inst.ruleSet,
-						pointsInBetween = pointsBetween(m.src)(m.dst),
-						anyLakesInBetween = StrategoUtils`reduceSet[Stratego`Point, bool](lambda b: bool, p: Stratego`Point & b or isLake(p))(false)(pointsInBetween),
-						piecesInBetween = StrategoUtils`mapFunctionSet[Point, [Piece]](StrategoState`pieceAt(inst.board))(pointsInBetween)
-						in (
-						not anyLakesInBetween and
-						srcPiece <> nil and
-						srcPiece.team = inst.currentTeam and
-						(dstPiece = nil or dstPiece.team = getOpponent(srcPiece.team)) and
-						dist(m.src)(m.dst) <= StrategoRules`getMovementRange(ruleset)(srcPiece.character) and
-						(piecesInBetween = {} or piecesInBetween = {nil})
-				)
-				
-			pre validPoint(m.src) and validPoint(m.dst)
-		;
 		
-		public executeMove: StrategoState`Instance -> Move -> StrategoState`Instance
-			executeMove(inst)(m) == 
-				let srcPiece = StrategoState`pieceAt(inst.board)(m.src),
-						dstPiece = StrategoState`pieceAt(inst.board)(m.dst),
-						attackRes = StrategoRules`resolveAttack(inst.ruleSet)(srcPiece)(dstPiece),
-						currTeam = inst.currentTeam,
-						currPlayer = inst.players(currTeam),
-						nextTeam = getOpponent(inst.currentTeam) in (
-					mk_StrategoState`Instance(
-						inst.ruleSet, 
-						nextTeam,
-						inst.players ++ {
-								currTeam |-> StrategoState`addMovePlayer(currPlayer)(m)
-						},
-						StrategoState`addMoveBoard(inst.board)(m)(attackRes)
-					)
-				)
-				
-			pre isValidMove(inst)(m)
-		; 
 		
-		public possibleMoves: StrategoState`Instance -> set of Move
-			possibleMoves(inst) ==
-				dunion 
-					StrategoUtils`mapFunctionSet[Point, set of Move]
-					(possibleMovesFromPoint(inst))
-					({point | point in set dom inst.board & inst.board(point).team = inst.currentTeam})
-		;
-		
-		public possibleMovesFromPoint: StrategoState`Instance -> Point -> set of Move
-			possibleMovesFromPoint(inst)(p) ==
-				{mk_Move(p, dst) | dst in set getPointsInRange(StrategoRules`getMovementRange(inst.ruleSet)(inst.board(p).character))(p) & isValidMove(inst)(mk_Move(p, dst))}
-				
-				pre p in set dom inst.board
-		;
 end Stratego
 

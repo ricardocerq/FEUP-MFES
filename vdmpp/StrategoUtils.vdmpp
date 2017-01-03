@@ -169,10 +169,9 @@ class StrategoUtils
 		public applyToMinAndMax[@T]: (real*real->@T) -> real -> real -> @T
 			applyToMinAndMax(f)(a)(b) ==
 				let minAndMax = minAndMax(a)(b),
-						max = minAndMax.#2,
-						min = minAndMax.#1 in (
-						
-						f(min, max)	
+						min = minAndMax.#1,
+						max = minAndMax.#2 in (
+							f(min, max)	
 				)
 				
 				post (a >= b => RESULT = f(b,a)) and
@@ -312,8 +311,6 @@ class StrategoUtils
 		;
 		
 		-------------------------------------------------------------------------------------------------------------
-		
-
 		
 	types
 	

@@ -1,5 +1,7 @@
 class StrategoState
+	
 	types
+	
 		public Board  = map Stratego`Point to Stratego`Piece
 		;
 		
@@ -16,15 +18,14 @@ class StrategoState
 			
 			inv mk_Instance(ruleSet,t,pl,board) == 
 				forall team in set dom pl & pl(team).team = team and 
-				card dom pl = 2 and
+				card dom pl = 2 --and
 				--len pl(t).plays <= len pl(Stratego`getOpponent(t)).plays and
-				let captureGetter = getCaptures(ruleSet)(board),
-						pieceGetter = StrategoRules`getAllPieces(ruleSet) in (
-					--Utils`sameElems[Stratego`Piece]
-					--(getAllPieces(board) ^ captureGetter(<Blu>) ^ captureGetter(<Red>))
-					--(pieceGetter(<Blu>) ^ pieceGetter(<Red>))
-					true
-				)
+				--let captureGetter = getCaptures(ruleSet)(board),
+				--		pieceGetter = StrategoRules`getAllPieces(ruleSet) in (
+				--	StrategoUtils`sameElems[Stratego`Piece]
+				--	(getAllPieces(board) ^ captureGetter(<Blu>) ^ captureGetter(<Red>))
+				--	(pieceGetter(<Blu>) ^ pieceGetter(<Red>))
+				--)
 		;
 		
 	
@@ -133,14 +134,9 @@ class StrategoState
 			post post_placePieceBoard(inst.board)(piece)(p, RESULT.board)
 		;
 		
-		public getCaptures: StrategoRules`RuleSet -> Board -> Stratego`Team -> seq of Stratego`Piece
-			getCaptures(ruleSet)(board)(team) ==
-				StrategoUtils`diff[Stratego`Piece](StrategoRules`getAllPieces(ruleSet)(team))(getPieces(board)(team))
-		;
-		
 		public getCaptures: StrategoState`Instance -> Stratego`Team -> seq of Stratego`Piece
 			getCaptures(inst)(team) ==
-				getCaptures(inst.ruleSet)(inst.board)(team)
+				StrategoUtils`diff[Stratego`Piece](StrategoRules`getAllPieces(inst.ruleSet)(team))(getPieces(inst.board)(team))
 		;
 		
 		public repeatedMove: Player -> Stratego`Move -> bool
@@ -156,6 +152,7 @@ class StrategoState
 							secondToLastPlay.dst = m.dst
 					)
 				)
+				
 				post RESULT <=> 
 						 let plays = player.plays in (
 								len plays >= 2 and
@@ -178,8 +175,15 @@ class StrategoState
 						bluPieces = teamToPieces(<Blu>),
 						redPieces = teamToPieces(<Red>) in (
 						
-							StrategoUtils`createMap[Stratego`Point, Stratego`Piece](bluArea)(StrategoUtils`rearrange[Stratego`Piece](ordersBlu)(bluPieces)) ++
-							StrategoUtils`createMap[Stratego`Point, Stratego`Piece](redArea)(StrategoUtils`rearrange[Stratego`Piece](ordersRed)(redPieces))
+							StrategoUtils`createMap[Stratego`Point, Stratego`Piece]
+								(bluArea)
+								(StrategoUtils`rearrange[Stratego`Piece](ordersBlu)(bluPieces)) 
+								
+								++
+								
+							StrategoUtils`createMap[Stratego`Point, Stratego`Piece]
+								(redArea)
+								(StrategoUtils`rearrange[Stratego`Piece](ordersRed)(redPieces))
 				
 				)
 			)
@@ -202,6 +206,66 @@ class StrategoState
 				mk_Instance(inst.ruleSet, Stratego`getOpponent(inst.currentTeam), inst.players, inst.board)
 				
 			post inst.currentTeam = Stratego`getOpponent(RESULT.currentTeam)
+		;
+		
+		public isValidMove: StrategoState`Instance ->Stratego`Move -> bool
+			isValidMove(inst)(m) ==
+				not Stratego`isLake(m.src) and
+				not Stratego`isLake(m.dst) and 
+				Stratego`aligned(m.src)(m.dst) and 
+				not StrategoState`repeatedMove(inst.players(inst.currentTeam))(m) and
+				let srcPiece = StrategoState`pieceAt(inst.board)(m.src),
+						dstPiece = StrategoState`pieceAt(inst.board)(m.dst),
+						ruleset = inst.ruleSet,
+						pointsInBetween = Stratego`pointsBetween(m.src)(m.dst),
+						anyLakesInBetween = exists p in set pointsInBetween & Stratego`isLake(p),
+						piecesInBetween = StrategoUtils`mapFunctionSet[Stratego`Point, [Stratego`Piece]](StrategoState`pieceAt(inst.board))(pointsInBetween)
+						in (
+						not anyLakesInBetween and
+						srcPiece <> nil and
+						srcPiece.team = inst.currentTeam and
+						(dstPiece = nil or dstPiece.team = Stratego`getOpponent(srcPiece.team)) and
+						Stratego`dist(m.src)(m.dst) <= StrategoRules`getMovementRange(ruleset)(srcPiece.character) and
+						(piecesInBetween = {} or piecesInBetween = {nil})
+				)
+				
+			pre Stratego`validPoint(m.src) and Stratego`validPoint(m.dst)
+		;
+		
+		public executeMove: StrategoState`Instance -> Stratego`Move -> StrategoState`Instance
+			executeMove(inst)(m) == 
+				let srcPiece = StrategoState`pieceAt(inst.board)(m.src),
+						dstPiece = StrategoState`pieceAt(inst.board)(m.dst),
+						attackRes = StrategoRules`resolveAttack(inst.ruleSet)(srcPiece)(dstPiece),
+						currTeam = inst.currentTeam,
+						currPlayer = inst.players(currTeam),
+						nextTeam = Stratego`getOpponent(inst.currentTeam) in (
+					mk_StrategoState`Instance(
+						inst.ruleSet, 
+						nextTeam,
+						inst.players ++ {
+								currTeam |-> StrategoState`addMovePlayer(currPlayer)(m)
+						},
+						StrategoState`addMoveBoard(inst.board)(m)(attackRes)
+					)
+				)
+				
+			pre isValidMove(inst)(m)
+		; 
+		
+		public possibleMoves: StrategoState`Instance -> set of Stratego`Move
+			possibleMoves(inst) ==
+				dunion 
+					StrategoUtils`mapFunctionSet[Stratego`Point, set of Stratego`Move]
+					(possibleMovesFromPoint(inst))
+					({point | point in set dom inst.board & inst.board(point).team = inst.currentTeam})
+		;
+		
+		public possibleMovesFromPoint: StrategoState`Instance -> Stratego`Point -> set of Stratego`Move
+			possibleMovesFromPoint(inst)(p) ==
+				{mk_Stratego`Move(p, dst) | dst in set Stratego`getPointsInRange(StrategoRules`getMovementRange(inst.ruleSet)(inst.board(p).character))(p) & isValidMove(inst)(mk_Stratego`Move(p, dst))}
+				
+				pre p in set dom inst.board
 		;
 		
 	operations

@@ -16,10 +16,6 @@ class StrategoTest is subclass of TestCase
 		);
 		
 		public test1() == (
-			dcl rules: StrategoRules`RuleSet := StrategoRules`getDefaultRuleSet(),
-			positions: set of Stratego`Point := Stratego`allPoints()
-			;
-			
 			dcl bluArea: set of Stratego`Point := Stratego`allPointsFiltered(Stratego`isInTeamArea(<Blu>));
 			dcl redArea: set of Stratego`Point := Stratego`allPointsFiltered(Stratego`isInTeamArea(<Red>));
 			
@@ -52,11 +48,11 @@ class StrategoTest is subclass of TestCase
 						inst: StrategoState`Instance := StrategoState`placePiece(original)(piece)(srcPoint);
 						
 				Assert`assertTrue("Piece was not placed correctly", StrategoState`pieceAt(inst.board)(srcPoint) = piece);
-				Assert`assertTrue(StrategoOperations`sprintf("Moves were different than expected, was: {}", [Stratego`possibleMoves(inst)]), expected = Stratego`possibleMoves(inst));
+				Assert`assertTrue(StrategoOperations`sprintf("Moves were different than expected, was: {}", [StrategoState`possibleMoves(inst)]), expected = StrategoState`possibleMoves(inst));
 				
 				for y = 1 to 10 do (
 					for x = 1 to 10 do (
-						Assert`assertTrue("Incorrect move validation", Stratego`isValidMove(inst)(mk_Stratego`Move(srcPoint, mk_Stratego`Point(x,y))) <=> mk_Stratego`Move(srcPoint, mk_Stratego`Point(x,y)) in set expected);
+						Assert`assertTrue("Incorrect move validation", StrategoState`isValidMove(inst)(mk_Stratego`Move(srcPoint, mk_Stratego`Point(x,y))) <=> mk_Stratego`Move(srcPoint, mk_Stratego`Point(x,y)) in set expected);
 					);
 				);
 		);
@@ -85,10 +81,10 @@ class StrategoTest is subclass of TestCase
 						move1: Stratego`Move := mk_Stratego`Move(point1, point2),
 						move2: Stratego`Move := mk_Stratego`Move(point2, point1),
 						inst: StrategoState`Instance := StrategoState`placePiece(original)(piece)(point1),
-						inst2: StrategoState`Instance := StrategoState`skipTurn(Stratego`executeMove(inst)(move1)),
-						inst3: StrategoState`Instance := StrategoState`skipTurn(Stratego`executeMove(inst2)(move2))
+						inst2: StrategoState`Instance := StrategoState`skipTurn(StrategoState`executeMove(inst)(move1)),
+						inst3: StrategoState`Instance := StrategoState`skipTurn(StrategoState`executeMove(inst2)(move2))
 			;
-			Assert`assertTrue("Move should be invalid", Stratego`isValidMove(inst3)(move1) = false);
+			Assert`assertTrue("Move should be invalid", StrategoState`isValidMove(inst3)(move1) = false);
 			Assert`assertTrue("Move should be repeated", StrategoState`repeatedMove(inst3.players(<Blu>))(move1));
 		);
 		
@@ -118,7 +114,7 @@ class StrategoTest is subclass of TestCase
 								str1: nat1 := StrategoRules`getStrength(original.ruleSet)(srcChar),
 								str2: nat1 := StrategoRules`getStrength(original.ruleSet)(dstChar),
 								inst: StrategoState`Instance := StrategoState`placePiece(StrategoState`placePiece(original)(pieceSrc)(point1))(pieceDst)(point2),
-								inst2: StrategoState`Instance := Stratego`executeMove(inst)(move1),
+								inst2: StrategoState`Instance := StrategoState`executeMove(inst)(move1),
 								resPiece: [Stratego`Piece] := StrategoState`pieceAt(inst2.board)(point2)
 						;
 
@@ -136,7 +132,7 @@ class StrategoTest is subclass of TestCase
 							
 						) else (
 						
-							if(StrategoRules`stronger(original.ruleSet)(srcChar)(dstChar)) then (
+							if(StrategoRules`compareChar(original.ruleSet)(srcChar)(dstChar) = <GREATER>) then (
 							
 								Assert`assertTrue("Wrong result", resPiece = pieceSrc);
 							
