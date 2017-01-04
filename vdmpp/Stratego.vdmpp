@@ -196,7 +196,7 @@ class Stratego
 				let align = alignment(src)(dst)
 				in (
 						if(align.#1)
-							then pointsInRanges({src.x})(intervalSet(src.y)( dst.y))
+							then pointsInRanges({src.x})(intervalSet(src.y)(dst.y))
 							else pointsInRanges(intervalSet(src.x)(dst.x))({src.y})
 				)
 			
