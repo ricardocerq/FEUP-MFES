@@ -37,8 +37,6 @@ class Stratego
 			team: Team
 		;
 								
-	values
-		
 	functions
 	
 		public dist: Point -> Point -> nat
@@ -187,10 +185,12 @@ class Stratego
 			post pl = <Red> => ((RESULT = true) <=> isInTeamAreaRed(p)) and
 					 pl = <Blu> => ((RESULT = true) <=> isInTeamAreaBlu(p))
 		;
+		
 		public isLake:Point -> bool
 			isLake(p) == 
 				p in set StrategoRules`lakes
 		;
+		
 		public pointsBetween: Point -> Point ->  set of Point
 			pointsBetween(src)(dst) ==
 				let align = alignment(src)(dst)
@@ -202,6 +202,7 @@ class Stratego
 			
 			pre aligned(src)(dst)
 		;
+		
 		public getPointsInRange: nat -> Point -> set of Point
 			getPointsInRange(range)(point) ==
 			pointsFiltered(
@@ -228,8 +229,6 @@ class Stratego
 			toCharacters(pieces) ==
 				StrategoUtils`mapFunctionSeq[Stratego`Piece, Stratego`Character](lambda p: Piece & p.character)(pieces)
 		;
-		
-		
 		
 end Stratego
 
