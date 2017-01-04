@@ -17,16 +17,17 @@ class StrategoState
 			players: map Stratego`Team to Player
 			board: Board
 			
-			inv mk_Instance(-,-,pl,-) == 
+			inv mk_Instance(rs,-,pl,b) == 
 				forall team in set dom pl & pl(team).team = team and 
 				card dom pl = 2 --and
 				--len pl(t).plays <= len pl(Stratego`getOpponent(t)).plays and
-				--and let captureGetter = getCaptures(rs)(b),
-				--		pieceGetter = StrategoRules`getAllPieces(rs) 
-				--		in (
-				--	StrategoUtils`sameElems[Stratego`Piece]
-				--	(getAllPieces(b) ^ captureGetter(<Blu>) ^ captureGetter(<Red>))
-				--	(pieceGetter(<Blu>) ^ pieceGetter(<Red>))
+				--and 
+				--	let captureGetter = getCaptures(rs)(b),
+				--			pieceGetter = StrategoRules`getAllPieces(rs) 
+				--	in (
+				--		StrategoUtils`sameElems[Stratego`Piece]
+				--		(getAllPieces(b) ^ captureGetter(<Blu>) ^ captureGetter(<Red>))
+				--		(pieceGetter(<Blu>) ^ pieceGetter(<Red>))
 				--)
 		;
 		
@@ -123,9 +124,14 @@ class StrategoState
 			post pieceAt(RESULT.board)(p) = piece
 		;
 		
+		public getCaptures: StrategoRules`RuleSet -> Board -> Stratego`Team -> seq of Stratego`Piece
+			getCaptures(ruleSet)(board)(team) ==
+				StrategoUtils`diff[Stratego`Piece](StrategoRules`getAllPieces(ruleSet)(team))(getPieces(board)(team))
+		;
+		
 		public getCaptures: StrategoState`Instance -> Stratego`Team -> seq of Stratego`Piece
 			getCaptures(inst)(team) ==
-				StrategoUtils`diff[Stratego`Piece](StrategoRules`getAllPieces(inst.ruleSet)(team))(getPieces(inst.board)(team))
+				getCaptures(inst.ruleSet)(inst.board)(team)
 		;
 		
 		public repeatedMove: Player -> Stratego`Move -> bool

@@ -15,6 +15,7 @@ class StrategoTest is subclass of TestCase
 		  IO`print(result.toString());
 		);
 		
+		
 		public test1() == (
 			dcl bluArea: set of Stratego`Point := Stratego`allPointsFiltered(Stratego`isInTeamArea(<Blu>));
 			dcl redArea: set of Stratego`Point := Stratego`allPointsFiltered(Stratego`isInTeamArea(<Red>));

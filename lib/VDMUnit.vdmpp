@@ -116,7 +116,7 @@ class Assert
 
 operations
   public static assertTrue: bool ==> ()
-  assertTrue (pbool) ==
+  assertTrue (pbool) == 
     if not pbool then exit new AssertionFailedError();
   
   public static assertTrue: seq of char * bool ==> ()

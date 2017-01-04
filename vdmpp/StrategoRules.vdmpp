@@ -17,7 +17,7 @@ class StrategoRules
 		};
 		
 	types
-	--mu
+
 		public RuleSet::
 			agressorAdvantage: bool
 			multiplicities: map Stratego`Character to nat

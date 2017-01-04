@@ -237,12 +237,18 @@ class StrategoUtils
 		; 
 		
 		-------------------------------------------------------------------------------------------------------------
+		public diffMeasure[@T]: seq of @T * seq of @T +> nat
+			diffMeasure(-,list2) ==
+			len list2
+		;
 		
 		public diff[@T]: seq of @T -> seq of @T -> seq of @T
 			diff(list1)(list2) ==
-				[el | el in seq list1 & el not in set elems list2]
+				if list2 = []
+				then list1
+				else diff[@T](removeElem[@T](list1)(hd list2))(tl list2)
 				
-			post forall el in seq list1 & el in set elems list2 <=> el not in set elems RESULT 
+			measure diffMeasure
 		;
 		
 		-------------------------------------------------------------------------------------------------------------
@@ -285,9 +291,9 @@ class StrategoUtils
 		
 		public sameElems[@T]: seq of @T -> seq of @T -> bool
 			sameElems(list1)(list2) == 
-				countElems[@T](list1) = countElems[@T](list1)
+				countElems[@T](list1) = countElems[@T](list2)
 			
-			post RESULT <=> (len list1 = len list2 and countElems[@T](list1) = countElems[@T](list1))
+			post RESULT <=> (len list1 = len list2 and countElems[@T](list1) = countElems[@T](list2))
 		;
 		
 end StrategoUtils

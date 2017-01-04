@@ -1,6 +1,7 @@
 class gui_Graphics
 
 	operations
+	
 		public init : () ==> ()
 			init() == 
 				is not yet specified
@@ -10,6 +11,5 @@ class gui_Graphics
 			sendData(list) == 
 				is not yet specified
 		;
-		
 		
 end gui_Graphics
