@@ -3,7 +3,9 @@ package gui;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -15,7 +17,6 @@ import java.util.Observable;
 import java.util.Observer;
 
 import javax.imageio.ImageIO;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.overture.ast.analysis.AnalysisException;
@@ -40,8 +41,12 @@ class StrategoPanel extends JPanel implements Observer, MouseListener, MouseMoti
 	transient BufferedImage[] pieces_blu;
 	transient BufferedImage background;
 
-	boolean gameover = false;
+	enum Winner {
+		RED, BLUE, NONE
+	}
 	
+	Winner gameover = Winner.NONE;
+
 	ValueFactory valueFactory = new ValueFactory();
 
 	int size = Math.min(this.getWidth(), this.getHeight());
@@ -54,11 +59,15 @@ class StrategoPanel extends JPanel implements Observer, MouseListener, MouseMoti
 	int hoverX = -1;
 	int hoverY = -1;
 
+	Font gameover_font;
+	
 	StrategoPanel(Model model, StrategoControl strategoCtrl) throws IOException {
 		super();
 		this.model = model;
 		this.strategoCtrl = strategoCtrl;
 
+		gameover_font = new Font("Serif", Font.PLAIN, 50);
+		
 		this.setBackground(Color.WHITE);
 
 		pieces_red = new BufferedImage[12];
@@ -88,9 +97,9 @@ class StrategoPanel extends JPanel implements Observer, MouseListener, MouseMoti
 
 		Value val = model.val;
 
-		if(gameover)
-			gameover = false;
-		
+		if (!gameover.equals(Winner.NONE))
+			gameover = Winner.NONE;
+
 		if (val != null) {
 			try {
 				ValueList list = val.seqValue(null);
@@ -101,7 +110,7 @@ class StrategoPanel extends JPanel implements Observer, MouseListener, MouseMoti
 
 				boolean flag_blu = false;
 				boolean flag_red = false;
-				
+
 				for (int y = 0; y < 10; y++) {
 					for (int x = 0; x < 10; x++) {
 						if ((x + 1 >= 3 && x + 1 <= 4 && y + 1 >= 5 && y + 1 <= 6)
@@ -112,29 +121,29 @@ class StrategoPanel extends JPanel implements Observer, MouseListener, MouseMoti
 								new NaturalValue(y + 1));
 						Value piece = board.get(p);
 
-						if(piece != null) {
+						if (piece != null) {
 							RecordValue pieceRecord = piece.recordValue(null);
 
 							String character = pieceRecord.fieldmap.get("character").toString();
 							character = character.substring(1, character.length() - 1).toLowerCase();
 							String team = pieceRecord.fieldmap.get("team").toString().substring(1, 2).toLowerCase();
-							
-							if(character.equals("flag")) {
-								if(team.equals("r"))
+
+							if (character.equals("flag")) {
+								if (team.equals("r"))
 									flag_red = true;
-								else if(team.equals("b"))
+								else if (team.equals("b"))
 									flag_blu = true;
 							}
 						}
 					}
 				}
-				
-				if(!flag_red) {
-					JOptionPane.showMessageDialog(this, "Blue wins!");
-					gameover = true;
-				} else if(!flag_blu) {
-					JOptionPane.showMessageDialog(this, "Red wins!");
-					gameover = true;
+
+				if (!flag_red) {
+					System.out.println("Blue wins!");
+					gameover = Winner.BLUE;
+				} else if (!flag_blu) {
+					System.out.println("Red wins!");
+					gameover = Winner.RED;
 				}
 			} catch (ValueException e) {
 				e.printStackTrace();
@@ -246,23 +255,25 @@ class StrategoPanel extends JPanel implements Observer, MouseListener, MouseMoti
 								new NaturalValue(y + 1));
 						Value piece = board.get(p);
 
-						if (sel1 == null) {
-							if (isIn("src", x + 1, y + 1) != null) {
-								drawMatrixRectRounded(g2, Color.GREEN, x, y, .1, 5, .9);
-							}
-						} else {
-							if (sel1.fieldmap.get("x").nat1Value(null) == x + 1
-									&& sel1.fieldmap.get("y").nat1Value(null) == y + 1) {
-								drawMatrixRectRounded(g2, Color.GREEN, x, y, .1, 5, .9);
-							} else if (isDst(x + 1, y + 1) != null) {
-								if (sel2 == null || (sel2.fieldmap.get("x").nat1Value(null) == x + 1
-										&& sel2.fieldmap.get("y").nat1Value(null) == y + 1)) {
-									Color c;
-									if (piece != null)
-										c = Color.RED;
-									else
-										c = Color.YELLOW;
-									drawMatrixRectRounded(g2, c, x, y, .1, 5, .9);
+						if(gameover.equals(Winner.NONE)) { 
+							if (sel1 == null) {
+								if (isIn("src", x + 1, y + 1) != null) {
+									drawMatrixRectRounded(g2, Color.GREEN, x, y, .1, 5, .9);
+								}
+							} else {
+								if (sel1.fieldmap.get("x").nat1Value(null) == x + 1
+										&& sel1.fieldmap.get("y").nat1Value(null) == y + 1) {
+									drawMatrixRectRounded(g2, Color.GREEN, x, y, .1, 5, .9);
+								} else if (isDst(x + 1, y + 1) != null) {
+									if (sel2 == null || (sel2.fieldmap.get("x").nat1Value(null) == x + 1
+											&& sel2.fieldmap.get("y").nat1Value(null) == y + 1)) {
+										Color c;
+										if (piece != null)
+											c = Color.RED;
+										else
+											c = Color.YELLOW;
+										drawMatrixRectRounded(g2, c, x, y, .1, 5, .9);
+									}
 								}
 							}
 						}
@@ -289,8 +300,36 @@ class StrategoPanel extends JPanel implements Observer, MouseListener, MouseMoti
 						}
 					}
 				}
-				if (hoverX != -1) {
+				if (hoverX != -1 && gameover.equals(Winner.NONE)) {
 					drawMatrixRectRounded(g2, Color.CYAN, hoverX - 1, hoverY - 1, .1, 5, .9);
+				}
+				
+				if(!gameover.equals(Winner.NONE)) {
+					if (g instanceof Graphics2D) {
+						String txt = "Game over! " + gameover.toString() + " wins!";
+						Graphics2D g2d = (Graphics2D) g;
+						g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+						g2d.setFont(gameover_font);
+						g2d.setColor(Color.WHITE);
+						
+						FontMetrics fm = g.getFontMetrics(gameover_font);
+						java.awt.geom.Rectangle2D rect = fm.getStringBounds(txt, g2d);
+
+						int textWidth = (int) (rect.getWidth());
+						int panelWidth = this.getWidth();
+						
+						int textHeight = (int) (rect.getHeight());
+						int panelHeight = this.getHeight();
+
+						// Center text horizontally
+						int txt_x = (panelWidth - textWidth) / 2;
+						int txt_y = (panelHeight - textHeight) / 2;
+						
+						g.setColor(Color.BLACK);
+						g.fillRect(0, txt_y - textHeight / 2 - 30, panelWidth, textHeight + 20);
+						g.setColor(gameover.equals(Winner.RED) ? Color.RED : Color.CYAN);
+						g2d.drawString(txt, txt_x, txt_y);
+					}
 				}
 			}
 		} catch (ValueException e) {
@@ -351,10 +390,10 @@ class StrategoPanel extends JPanel implements Observer, MouseListener, MouseMoti
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
 		this.repaint();
-		
-		if(gameover)
+
+		if (!gameover.equals(Winner.NONE))
 			return;
-		
+
 		try {
 			if (model.val != null) {
 				if (arg0.getX() >= startX / 2 && arg0.getX() < getWidth() - startX && arg0.getY() >= startY / 2

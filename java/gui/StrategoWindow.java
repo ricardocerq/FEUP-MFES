@@ -47,7 +47,7 @@ public class StrategoWindow extends JFrame {
 		// Allow Overture to do a controlled shutdown
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		this.model = new Model();
-		
+
 		// add buttons
 		btn_newgame = new JButton("New Game");
 		btn2 = new JButton("Button 2");
@@ -62,8 +62,7 @@ public class StrategoWindow extends JFrame {
 		pack();
 
 		setLocationRelativeTo(null);
-		
-		
+
 	}
 
 	public void init() {
@@ -85,7 +84,8 @@ public class StrategoWindow extends JFrame {
 		btn_newgame.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					System.out.println("return " + StrategoWindow.this.view.strategoCtrl.execute("let inst = StrategoOperations`newRandomInstance() in gr.sendData(StrategoOperations`getGameData(inst))"));
+					System.out.println("return " + StrategoWindow.this.view.strategoCtrl.execute(
+							"let inst = StrategoOperations`newRandomInstance() in gr.sendData(StrategoOperations`getGameData(inst))"));
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}
