@@ -204,7 +204,7 @@ class StrategoState
 		
 		public skipTurn: Instance -> Instance
 			skipTurn(inst) ==
-				mk_Instance(inst.ruleSet, Stratego`getOpponent(inst.currentTeam), inst.players, inst.board)
+				mu(inst, currentTeam |-> Stratego`getOpponent(inst.currentTeam))
 				
 			post inst.currentTeam = Stratego`getOpponent(RESULT.currentTeam)
 		;
@@ -265,7 +265,9 @@ class StrategoState
 		
 		public possibleMovesFromPoint: StrategoState`Instance -> Stratego`Point -> set of Stratego`Move
 			possibleMovesFromPoint(inst)(p) ==
-				{mk_Stratego`Move(p, dst) | dst in set Stratego`getPointsInRange(StrategoRules`getMovementRange(inst.ruleSet)(inst.board(p).character))(p) & isValidMove(inst)(mk_Stratego`Move(p, dst))}
+				{mk_Stratego`Move(p, dst) | 
+					dst in set Stratego`getPointsInRange(StrategoRules`getMovementRange(inst.ruleSet)(inst.board(p).character))(p) 
+						& isValidMove(inst)(mk_Stratego`Move(p, dst))}
 				
 				pre p in set dom inst.board
 		;
