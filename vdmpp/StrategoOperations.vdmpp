@@ -53,7 +53,7 @@ class StrategoOperations
 		
 		public getGameData: StrategoState`Instance -> seq of ?
 			getGameData(inst) ==
-				[inst, StrategoState`possibleMoves(inst)]
+				[inst, StrategoState`possibleMoves(inst), StrategoState`gameOver(inst)]
 		;
 		
 		public getChar: StrategoState`Instance -> Stratego`Point -> seq of char

@@ -19,37 +19,6 @@ public class Graphics implements Serializable {
 		model = ctrl.getModel();
 		return new VoidValue();
 	}
-
-	public Value testFunc(Value number) throws ValueException {
-		final Value temp = number;
-		System.out.println(temp.intValue(null));
-		return new VoidValue();
-	}
-	
-	public Value testFunc2(Value inst) throws ValueException {
-		System.out.println(inst.stringValue(null));
-		return new VoidValue();
-	}
-	
-	public Value board(Value str) throws ValueException {
-		String res = "";
-		ValueList lst = str.seqValue(null);
-		System.out.println("Banana ");
-		for(int i = 0; i < lst.size(); i++) {
-			res += lst.get(i).charValue(null);
-		}
-		
-		System.out.println("Banana:\n" + res);
-		
-		return new VoidValue();
-	}
-	
-	public Value inst(Value str) throws ValueException {
-		
-		model.notifyObservers(str);
-		
-		return new VoidValue();
-	}
 	
 	public Value sendData(Value str) throws ValueException {
 		System.out.println("Received :" + str);

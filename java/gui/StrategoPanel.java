@@ -106,48 +106,20 @@ class StrategoPanel extends JPanel implements Observer, MouseListener, MouseMoti
 
 				RecordValue instance = list.get(0).recordValue(null);
 
-				ValueMap board = instance.fieldmap.get("board").mapValue(null);
+				String currentTeam = instance.fieldmap.get("currentTeam").toString().substring(1, 4).toLowerCase();
+				
+				boolean game_ended = list.get(2).boolValue(null);
+				
+				System.out.println(currentTeam + " " + game_ended);
 
-				boolean flag_blu = false;
-				boolean flag_red = false;
-
-				for (int y = 0; y < 10; y++) {
-					for (int x = 0; x < 10; x++) {
-						if ((x + 1 >= 3 && x + 1 <= 4 && y + 1 >= 5 && y + 1 <= 6)
-								|| (x + 1 >= 7 && x + 1 <= 8 && y + 1 >= 5 && y + 1 <= 6))
-							continue;
-
-						RecordValue p = valueFactory.createRecord("Stratego`Point", new NaturalValue(x + 1),
-								new NaturalValue(y + 1));
-						Value piece = board.get(p);
-
-						if (piece != null) {
-							RecordValue pieceRecord = piece.recordValue(null);
-
-							String character = pieceRecord.fieldmap.get("character").toString();
-							character = character.substring(1, character.length() - 1).toLowerCase();
-							String team = pieceRecord.fieldmap.get("team").toString().substring(1, 2).toLowerCase();
-
-							if (character.equals("flag")) {
-								if (team.equals("r"))
-									flag_red = true;
-								else if (team.equals("b"))
-									flag_blu = true;
-							}
-						}
-					}
-				}
-
-				if (!flag_red) {
-					System.out.println("Blue wins!");
-					gameover = Winner.BLUE;
-				} else if (!flag_blu) {
+				if (game_ended && currentTeam.equals("blu")) {
 					System.out.println("Red wins!");
 					gameover = Winner.RED;
+				} else if (game_ended && currentTeam.equals("red")) {
+					System.out.println("Blue wins!");
+					gameover = Winner.BLUE;
 				}
 			} catch (ValueException e) {
-				e.printStackTrace();
-			} catch (ValueFactoryException e) {
 				e.printStackTrace();
 			} catch (Exception e) {
 				e.printStackTrace();
