@@ -229,6 +229,6 @@ class Stratego
 			toCharacters(pieces) ==
 				StrategoUtils`mapFunctionSeq[Stratego`Piece, Stratego`Character](lambda p: Piece & p.character)(pieces)
 		;
-		
+			
 end Stratego
 

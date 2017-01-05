@@ -157,10 +157,6 @@ class StrategoTest is subclass of TestCase
 			Assert`assertTrue("Game should not be over in the beginning", StrategoState`gameOver(init) = false);
 			Assert`assertTrue("Move should be repeated", StrategoState`gameOver(endInst) = true);
 		);
-		
-		public static main() ==
-			new StrategoTest().test1()
-		;
 			
 
 end StrategoTest
